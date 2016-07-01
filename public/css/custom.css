@@ -1,0 +1,83 @@
+.small-box {
+    position: relative;
+    display: block;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    margin-bottom: 15px;
+}
+
+.small-box>.inner {
+    padding: 10px;
+    color: white;
+}
+
+.small-box h3 {
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.color-withe{
+     color: white;
+}
+.bg-withe{
+    background-color: white;
+}
+.bg-lovely {
+    background-color: #FF0066!important;
+}
+.bg-gray{
+    background-color: #dddddd!important;
+}
+.bg-aqua {
+    background-color: #00c0ef!important;
+}
+
+.bg-green {
+    background-color: #00a65a!important;
+}
+.bg-green-seagreen{
+    background-color: seagreen;
+}
+.bg-green-mediumSeagreen{
+    background-color: mediumseagreen;
+}
+
+.bg-yellow {
+    background-color: #f39c12!important;
+}
+
+.bg-red {
+    background-color: #f56954!important;
+}
+.bg-pink-deePink {
+    background-color: deeppink;
+}
+.bg-pink-hotPink {
+    background-color: hotpink;
+}
+.bg-pink {
+    background-color: pink;
+}
+.bg-pink-mediumVioletRed {
+    background-color: MediumVioletRed;
+}
+.bg-pink-magenta{
+    background-color: magenta;
+}
+.bg-pink-lightPink{
+    background-color: lightpink;
+}
+
+.placeholder {
+    margin-bottom: 20px;
+}
+
+.custom-alert-default{
+    background: #f8f8f8;
+    border-color: #e7e7e7;
+    color: #777;
+}
