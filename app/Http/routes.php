@@ -61,7 +61,17 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 Route::get('/t', function (\Illuminate\Http\Request $request) {
-    \App\Core\RedisCache::getInstance()->set('test', ['name999'=>'longjq']);
+    
+    $users = new App\Models\Assistant\User();
+    
+
+    $agent = new \App\Core\ReportAgent();
+    $items = $users->take(5)->get();
+    
+    foreach ($items as $user){
+        $agent->info($user);
+    }
+
 });
 
 
