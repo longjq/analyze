@@ -1,6 +1,7 @@
 <?php
 namespace App\Libraries;
 use DB;
+use Storage;
 class LoadCache
 {
 
@@ -17,15 +18,21 @@ class LoadCache
 
     public function __construct()
     {
-        $this->cache = \App\Libraries\Cache::getInstance();
+        // $this->cache = \App\Libraries\Cache::getInstance();
         $this->userList = new \App\Models\UsersList();
         $this->package = new \App\Models\Package();
+    }
+    
+    // 删除昨日文件夹
+    public function removeLastDayData()
+    {
+        $date = date('Y-m-d', strtotime('-1 days'));
+        Storage::deleteDirectory('transfers'.DIRECTORY_SEPARATOR.$date);
     }
 
     // 定时解包
     public function decodePackages($len)
     {
-
         $lists = DB::table('apps_user_list')->where('decode',0)->take($len)->get();
         DB::beginTransaction();
         foreach ($lists as $key => $value) {

@@ -63,14 +63,35 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('/t', function (\Illuminate\Http\Request $request) {
     
     $users = new App\Models\Assistant\User();
-    
+    $userState= new App\Models\Assistant\UserState();
+    $events = new App\Models\Assistant\UserEvent();
+    $locations = new App\Models\Assistant\UserLocation();
+    $packages = new App\Models\Assistant\UserSnapshots();
+
 
     $agent = new \App\Core\ReportAgent();
-    $items = $users->take(5)->get();
-    
-    foreach ($items as $user){
-        $agent->info($user);
+    $users_data = $users->skip(5)->take(5)->get();
+    $userStates_data = $userState->skip(5)->take(5)->get();
+    $events_data = $events->take(5)->get();
+    $locations_data = $locations->take(5)->get();
+    $packages_data = $packages->take(5)->get();
+
+    foreach ($events_data as $event){
+        $agent->info($event);
+    }foreach ($locations_data as $location){
+        $agent->info($location);
+    }foreach ($packages_data as $package){
+        $agent->info($package);
     }
+
+
+    foreach ($users_data as $user){
+        $agent->info($user);
+    } foreach ($userStates_data as $userState){
+        $agent->info($userState);
+    }
+
+
 
 });
 

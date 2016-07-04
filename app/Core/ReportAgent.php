@@ -8,6 +8,7 @@
 
 namespace App\Core;
 
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Formatter\LogstashFormatter;
@@ -27,7 +28,7 @@ class ReportAgent
 
     public function __construct()
     {
-        $this->path = $this->basePath;
+        $this->path = $this->basePath.DIRECTORY_SEPARATOR.date('Y-m-d').DIRECTORY_SEPARATOR;
     }
 
     private function log($item)
@@ -35,7 +36,7 @@ class ReportAgent
         $tableName = $item->getTable();
         $this->logger = new Logger($tableName);
 
-        $handler = new RotatingFileHandler(storage_path($this->path.$tableName.'.log'));
+        $handler = new StreamHandler(storage_path($this->path.$tableName.'.log'));
         $handler->setFormatter(new LogstashFormatter($item->getTable()));
         $this->logger->pushHandler($handler);
         
