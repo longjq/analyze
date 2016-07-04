@@ -50,7 +50,9 @@ class UsersHourCount extends Command
         $d['Time'] = intval(time()) - intval($s);
         $d['memory_after'] = memory_get_usage();
         \App\Libraries\LogInfo::info('每小时新增和活跃(saveHourUserCount),',$d);
-        \App\Libraries\Cache::getInstance()->setString('last', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每小时记录新增和活跃(saveHourUserCount)');
-
+        // \App\Libraries\Cache::getInstance()->setString('last', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每小时记录新增和活跃(saveHourUserCount)');
+        \App\Models\Cache::where('key','last_query')->update([
+            'value' => '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每小时记录新增和活跃(saveHourUserCount)'
+        ]);
     }
 }

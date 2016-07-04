@@ -48,7 +48,9 @@ class UsersLive extends Command
         $d['Time'] = intval(time()) - intval($s);
         $d['memory_after'] = memory_get_usage();
         \App\Libraries\LogInfo::info('每日用户统计留存率(syncUserLive),',$d);
-        \App\Libraries\Cache::getInstance()->setString('last', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每日用户统计留存率(syncUserLive)');
-
+        // \App\Libraries\Cache::getInstance()->setString('last', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每日用户统计留存率(syncUserLive)');
+        \App\Models\Cache::where('key','last_query')->update([
+            'value' => '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每日用户统计留存率(syncUserLive)'
+        ]);
     }
 }

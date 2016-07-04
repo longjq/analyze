@@ -15,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
     {
         //视图间共享数据
         //$last = \App\Libraries\Cache::getInstance()->getString('last');
-        //view()->share('last',$last);
+        $last = \App\Models\Cache::where('key','last_query')->lists('value');
+        view()->share('last',$last[0]);
     }
 
     /**
