@@ -40,7 +40,7 @@ class LoadAssistant
             ->where('ctime','<=',$dateTime[1])
             ->where('mtime', '>=', intval($dateTime[0]) + 86400)
             ->get();
-
+	if (count($users) == 0){ return false;}
         $avgDay = round(count($users) / $userCount, 2) * 100;
         $data = [
             'row_date' =>  $dayDate,
