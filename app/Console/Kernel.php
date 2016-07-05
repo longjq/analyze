@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\UsersPackage::class,
         Commands\UsersRemoveData::class,
         Commands\UsersDash::class,
+        Commands\UsersLiveDateCount::class,
     ];
 
     /**
@@ -33,9 +34,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('users:live')
             ->daily();
         $schedule->command('users:package')
-            ->hourly();
-        $schedule->command('users:remove')
+            ->everyFiveMinutes();
+        $schedule->command('users:dash')
             ->daily();
-        // todo ... dash 首页刷新
+        $schedule->command('users:date_count')
+            ->hourly();
     }
 }

@@ -41,7 +41,7 @@ class UsersRemoveData extends Command
         $s = time();
         $d['memory_before'] = memory_get_usage();
         $load = new \App\Libraries\LoadCache();
-        // $load->removeLastDayData();
+        $load->removeLastDayData();
         $d['Time'] = intval(time()) - intval($s);
         $d['memory_after'] = memory_get_usage();
         // \App\Libraries\LogInfo::info('删除昨日文件夹(removeLastDayData),',$d);

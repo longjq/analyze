@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dash/new', 'RefreshController@userNews');
     Route::get('/dash/hot', 'RefreshController@userHots');
     Route::get('/dash/live', 'RefreshController@userLives');
-    Route::get('/dash/cache', 'RefreshController@cacheIntoDB');
+    
 
 
     // 字段导出用户id
@@ -68,12 +68,19 @@ Route::get('/t', function (\Illuminate\Http\Request $request) {
     $locations = new App\Models\Assistant\UserLocation();
     $packages = new App\Models\Assistant\UserSnapshots();
 
-
     $agent = new \App\Core\ReportAgent();
-    $users_data = $users->skip(5)->take(5)->get();
-    $userStates_data = $userState->skip(5)->take(5)->get();
+    $users_data = $users->whereBetween('created_at',['2016-07-03 00:00:00','2016-07-03 23:59:59'])->take(10)->get();
+    // $users_data = $users->whereIn('id',[1573,1574,1575])->get();
+
+    $user_ids = $users_data->pluck('id');
+
+    $userStates_data = $userState->whereIn('user_id', $user_ids)->get();
+    // $userStates_data = $userState->skip(5)->take(5)->get();
+
     $events_data = $events->take(5)->get();
-    $locations_data = $locations->take(5)->get();
+
+    $locations_data = $locations->whereIn('user_id', $user_ids)->get();
+    // $locations_data = $locations->take(5)->get();
     $packages_data = $packages->take(5)->get();
 
     foreach ($events_data as $event){
