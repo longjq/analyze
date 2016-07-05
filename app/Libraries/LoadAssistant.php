@@ -54,8 +54,36 @@ values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']
 
     }
 
+    // 用户，今日，本周，本月活跃数定时任务
+    public function userLive()
+    {
+        $today = DateHelper::dateTimeRange(DateHelper::thisToday());
+        $week = DateHelper::thisWeekTime();
+        $mouth = DateHelper::thisMonthTime();
+        
+        // 过去一小时，计算用户活跃数，今日，本周，本月
+        $todayCount = $this->listUser->usersByTimeRangeCount('mtime',$today[0],$today[1]);
+        $weekCount = $this->listUser->usersByTimeRangeCount('mtime',$week[0],$week[1]);
+        $mouthCount = $this->listUser->usersByTimeRangeCount('mtime',$mouth[0],$mouth[1]);
+
+        \App\Models\Cache::where('key', 'now_hot_day')->update([
+            'value' => $todayCount
+        ]);
+
+        \App\Models\Cache::where('key', 'now_hot_week')->update([
+            'value' => $weekCount
+        ]);
+
+        \App\Models\Cache::where('key', 'now_hot_month')->update([
+            'value' => $mouthCount
+        ]);
+
+        // $dbHots = $this->hotUser->saveUserCount($hourHotCount, $dateHelper);
+    }
+
+
     /**
-     * 同步新增、活跃用户数
+     * 同步新增
      * @return array
      */
     public function saveHourUserCount(){
@@ -69,15 +97,11 @@ values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']
         $hourNewCount = $this->listUser->usersByTimeRangeCount('ctime',$start,$end);
         $dbNews = $this->newUser->saveUserCount($hourNewCount, $dateHelper);
 
-        // 过去一小时，用户活跃数
-        $hourHotCount = $this->listUser->usersByTimeRangeCount('mtime',$start,$end);
-        $dbHots = $this->hotUser->saveUserCount($hourHotCount, $dateHelper);
-
         return [
             'dbNews' => $dbNews,
             'newCount' => $hourNewCount,
-            'dbHots' => $dbHots,
-            'hotCount' => $hourHotCount
+            //'dbHots' => $dbHots,
+            //'hotCount' => $hourHotCount
         ];
     }
 

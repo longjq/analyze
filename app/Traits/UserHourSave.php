@@ -14,7 +14,7 @@ use App\Libraries\DateHelper;
 trait UserHourSave
 {
     /**
-     * 保存小时用户数[新增|活跃]
+     * 保存小时用户数[新增]
      * @param $count 用户数
      * @param DateHelper $dateHelper 自定义日期对象
      * @return mixed
