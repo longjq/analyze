@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\UserHourSave;
-use App\Libraries\Cache;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 class UsersList extends Model

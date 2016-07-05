@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Libraries\Cache;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
