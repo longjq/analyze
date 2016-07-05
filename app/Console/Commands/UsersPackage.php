@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Libraries\LoadAssistant;
 use Illuminate\Console\Command;
-use \App\Libraries\LoadCache;
 class UsersPackage extends Command
 {
     /**
@@ -40,7 +40,7 @@ class UsersPackage extends Command
         $s = time();
         $d['memory_before'] = memory_get_usage();
 
-        $load = new LoadCache();
+        $load = new LoadAssistant();
         $rows = $load->decodePackages(100);
         $this->info('Rows:' . $rows);
 

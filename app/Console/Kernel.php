@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
         Commands\UsersHourCount::class,
         Commands\UsersLive::class,
         Commands\UsersPackage::class,
-        Commands\UsersRemoveData::class,
         Commands\UsersDash::class,
         Commands\UsersLiveDateCount::class,
+        Commands\LiveCount::class,
     ];
 
     /**
@@ -39,5 +39,7 @@ class Kernel extends ConsoleKernel
             ->daily();
         $schedule->command('users:date_count')
             ->hourly();
+        $schedule->command('users:live_count')
+            ->daily();
     }
 }

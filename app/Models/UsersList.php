@@ -132,7 +132,7 @@ class UsersList extends Model
 
     // 统计相关字段总人数
     public function groupCount($field){
-        return $this->select($field, DB::raw('count('.$field.') as '.$field.'_count'))->groupBy($field)->get();
+        return $this->select($field, DB::raw('count('.$field.') as '.$field.'_count,COUNT(1) as null_count'))->groupBy($field)->get();
     }
 
     public function apps()

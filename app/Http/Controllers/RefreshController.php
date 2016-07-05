@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Libraries\LoadAssistant;
-use App\Libraries\LoadCache;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -20,16 +19,6 @@ class RefreshController extends Controller
         $this->loadAssistant = new \App\Libraries\LoadAssistant();
         $this->cache = new \App\Models\Cache();
     }
-
-    // 用户数据入库
-    public function cacheIntoDB(){
-        $load = new LoadCache();
-        $load->cacheToDB('user',1,10);
-        $load->cacheToDB('user_location',1,10);
-        $load->cacheToDB('user_state',1,10);
-        $load->cacheToDB('user_event',1,10);
-    }
-
 
     // 刷新用户新增数
     public function userNews()

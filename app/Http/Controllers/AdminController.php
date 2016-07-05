@@ -43,16 +43,19 @@ class AdminController extends Controller
     public function userData(Request $request)
     {
         if ($request->isMethod('post')) {
-            $u = $request->input('u');
-            $this->userList->groupCount($u);
-
             $fields = ['v', 'lang', 'brand', 'device', 'ov','country', 'area', 'region', 'city', 'isp'];
             $u = $request->input('u');
             $countName = $u . '_count';
             if (in_array($u, $fields)) {
-                $data = $this->userList->groupCount($u)->toArray();
-                $dataCount = array_sum(array_column($data, $countName));
-                return view('user_data', compact('data', 'u', 'dataCount'));
+                $userCount = $this->userList->count();
+                $data = $this->userList->groupCount($u);
+                $nullCount = null;
+                if (isset($data) && count($data) > 0 && is_null($data[0][$u])
+                    && $data[0][$countName]===0){
+                    $nullCount = $data[0]['null_count'];
+                    $data->shift();
+                }
+                return view('user_data', compact('data','nullCount', 'u', 'userCount'));
             }
             abort('400', '非法操作');
         }

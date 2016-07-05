@@ -9,4 +9,12 @@ class Cache extends Model
     protected $table = 'caches';
     protected $guarded = ['id'];
     public $timestamps = false;
+
+    // 修改对应key的value值
+    public function updateValue($key, $value)
+    {
+        return $this->where('key', $key)->update([
+            'value' => $value
+        ]);
+    }
 }

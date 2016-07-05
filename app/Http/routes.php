@@ -61,6 +61,12 @@ Route::group(['middleware' => 'auth'], function () {
 
 
 Route::get('/t', function (\Illuminate\Http\Request $request) {
+
+    $load = new \App\Libraries\LoadAssistant();
+    $load->userHotRefresh();
+
+
+
     
     $users = new App\Models\Assistant\User();
     $userState= new App\Models\Assistant\UserState();

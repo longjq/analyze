@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Libraries\AnalyzeHelper;
 use App\Libraries\DateHelper;
 use App\Libraries\DBQueryHelper;
-use App\Models\UsersHot;
+
+use App\Models\LiveCount;
 use App\Models\UsersList;
 use App\Models\UsersLive;
 use App\Models\UsersNew;
@@ -20,14 +21,14 @@ class ChartController extends Controller
     private $usersList; // 存活率
     private $anayzle; // 分析
     private $usersLive; // 平均存活率
-
+    private $liveCount; //每日活跃数
     public function __construct()
     {
         $this->usersNew = new UsersNew();
-        $this->usersHot = new UsersHot;
         $this->usersList = new UsersList;
         $this->anayzle = new AnalyzeHelper;
         $this->usersLive = new UsersLive;
+        $this->liveCount = new LiveCount();
     }
 
     // 新增用户统计数据
@@ -59,12 +60,12 @@ class ChartController extends Controller
     public function usersHot(Request $request){
         $data = [];
         if($request->isMethod('get')){
-            $d = DateHelper::monthRange(date('Y-m-d'));
+            $dateHelper = new DateHelper(time());
 
-            $rows = $this->usersHot->usersByDateRange($d[0], $d[1]);
+            $rows = $this->liveCount->usersByDateRange($dateHelper);
 
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $this->anayzle->anayzleMonthCount($rows->toArray());
+            $data['datas'] = $rows->pluck('live_count')->toArray();
 
             return view('charts/users_hot', compact('data'));
         }

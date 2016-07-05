@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Libraries\LoadAssistant;
-use App\Libraries\LoadCache;
 use App\Models\User;
 use App\Models\UsersList;
 use Illuminate\Http\Request;

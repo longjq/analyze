@@ -16,14 +16,37 @@ class LoadAssistant
     private $hotUser;
     private $package;
     private $liveUser;
+    private $cache;
+    private $liveCount;
     public function __construct()
     {
         $this->newUser = new \App\Models\UsersNew();
-        $this->hotUser = new \App\Models\UsersHot();
+
         $this->listUser = new \App\Models\UsersList();
         $this->liveUser = new \App\Models\UsersLive();
         $this->package = new \App\Models\Package();
         $this->analyze = new \App\Libraries\AnalyzeHelper();
+        $this->cache = new \App\Models\Cache();
+        $this->liveCount = new \App\Models\LiveCount();
+    }
+
+    // 记录每日用户活跃数
+    public function liveCount()
+    {
+        $date = DateHelper::dateTimeRange(date('Y-m-d',strtotime('-1 days')));
+        $usersCount = $this->listUser->whereBetween('mtime', $date)->count();
+        $this->liveCount->saveLiveCount(new DateHelper(strtotime('-1 days')), $usersCount);
+    }
+
+    // 定时解包
+    public function decodePackages($len)
+    {
+        $lists = DB::table('apps_user_list')->where('decode',0)->take($len)->get();
+        DB::beginTransaction();
+        foreach ($lists as $key => $value) {
+            $this->userList->updatePackageItem((array)$value);
+        }
+        DB::commit();
     }
 
     /**
@@ -108,55 +131,30 @@ values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']
     // 活跃数据
     public function userHotRefresh()
     {
-        // 今日活跃
-        $today = DateHelper::thisToday();
-        $countHotDay = $this->hotUser->where('row_date', $today)->get();
-        $countHotDay = $this->analyze->anayzleMonthCount($countHotDay);
-        \App\Models\Cache::where('key', 'now_hot_day')->update([
-            'value' => $countHotDay[0],
-        ]);
 
+        // 今日活跃
+        $countHotDay = $this->liveCount->dayCount(new DateHelper(time()));
+        $this->cache->updateValue('now_hot_day', $countHotDay);
+        
         // 本周活跃
-        $thisWeek = DateHelper::thisWeek();
-        $countHotWeek = $this->hotUser->where('row_date', '>=', $thisWeek['start'])
-            ->where('row_date', '<=', $thisWeek['end'])->get();
-        $countHotWeek = $this->analyze->anayzleMonthCount($countHotWeek);
-        \App\Models\Cache::where('key', 'now_hot_week')->update([
-            'value' => array_sum($countHotWeek),
-        ]);
+        $countHotWeek = $this->liveCount->dayRangeCount(DateHelper::thisWeek());
+        $this->cache->updateValue('now_hot_week', $countHotWeek);
 
         // 本月活跃
-        $thisMonth = DateHelper::thisMonth(time());
-        $countHotMonth = $this->hotUser->where('row_date', '>=', $thisMonth['start'])
-            ->where('row_date', '<=', $thisMonth['end'])->get();
-        $countHotMonth = $this->analyze->anayzleMonthCount($countHotMonth);
-        \App\Models\Cache::where('key', 'now_hot_month')->update([
-            'value' => array_sum($countHotMonth),
-        ]);
+        $countHotMonth = $this->liveCount->dayRangeCount(DateHelper::thisMonth(time()));
+        $this->cache->updateValue('now_hot_month', $countHotMonth);
 
         // 昨日活跃
-        $yesterday = new DateHelper(strtotime('-1 day'));
-        $yesterdayUsersHot = $this->hotUser->where('row_date', $yesterday->getDateFormat())->get();
-        $countHotDay = $this->analyze->anayzleMonthCount($yesterdayUsersHot);
-        \App\Models\Cache::where('key', 'last_hot_day')->update([
-            'value' => $countHotDay[0],
-        ]);
+        $countHotDayLast = $this->liveCount->dayCount(new DateHelper(strtotime('-1 day')));
+        $this->cache->updateValue('last_hot_day', $countHotDayLast);
 
         // 上周活跃
-        $lastWeekRange = DateHelper::lastNWeek(time(), 1);
-        $lastWeekUsersHot = $this->hotUser->usersByDateRange($lastWeekRange[0], $lastWeekRange[1]);
-        $countHotWeek = $this->analyze->anayzleMonthCount($lastWeekUsersHot);
-        \App\Models\Cache::where('key', 'last_hot_week')->update([
-            'value' => array_sum($countHotWeek),
-        ]);
+        $countHotWeekLast = $this->liveCount->dayRangeCount(DateHelper::lastNWeek(time(), 1));
+        $this->cache->updateValue('last_hot_week', $countHotWeekLast);
 
         // 上月活跃
-        $lastMonth = new DateHelper(strtotime('-1 month'));
-        $lastMonthUsers = $this->hotUser->where('month', $lastMonth->getMonth())->where('year', $lastMonth->getYear())->get();
-        $countMonthUsersHot = $this->analyze->anayzleMonthCount($lastMonthUsers);
-        \App\Models\Cache::where('key', 'last_hot_month')->update([
-            'value' => array_sum($countMonthUsersHot),
-        ]);
+        $countHotMonthLast = $this->liveCount->dayRangeCount(DateHelper::lastMonth(time()));
+        $this->cache->updateValue('last_hot_month', $countHotMonthLast);
     }
 
     // 新增数据

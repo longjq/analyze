@@ -201,7 +201,7 @@ class DateHelper
         return date('Y-m-d');
     }
 
-    public static function dateTimeRange($date)
+    public static function  dateTimeRange($date)
     {
         $t = strtotime($date);
         $start = mktime(0,0,0,date("m",$t),date("d",$t),date("Y",$t));
@@ -228,7 +228,7 @@ class DateHelper
     }
 
     // 本周
-    public static function thisWeek()
+    public static function  thisWeek()
     {
         //当前日期
         $sdefaultDate = date("Y-m-d");

@@ -42,7 +42,6 @@ class UsersDash extends Command
     {
         $s = time();
         $d['memory_before'] = memory_get_usage();
-        $load = new \App\Libraries\LoadCache();
 
         // 系统总用数
         $this->loadAssistant->userTotal();
