@@ -39,6 +39,7 @@ class UsersLiveDateCount extends Command
     public function handle()
     {
         $load = new LoadAssistant();
-        $load->userLive();
+        // 每小时记录
+        $load->userLiveHot();
     }
 }

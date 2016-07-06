@@ -38,18 +38,12 @@ class UsersHourCount extends Command
      */
     public function handle()
     {
-        $s = time();
-        $d['memory_before'] = memory_get_usage();
-        // 记录每小时新增用户数和活跃数
         $load = new LoadAssistant();
-        $result = $load->saveHourUserCount();
-        $this->info('Hour News Count:'.$result['newCount']);
-        $this->info('Hour Hots Count:'.$result['hotCount']);
-        $this->info('DB News '.$result['dbNews']);
-        $this->info('DB Hots:'.$result['dbHots']);
-        $d['Time'] = intval(time()) - intval($s);
-        $d['memory_after'] = memory_get_usage();
-        \App\Libraries\LogInfo::info('每小时新增和活跃(saveHourUserCount),',$d);
+        // 记录每小时新增用户数
+        $load->saveHourUserCount();
+        // 更新今日、本周、本月的用户数
+        $load->nowNews();
+
         \App\Models\Cache::where('key','last_query')->update([
             'value' => '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：每小时记录新增和活跃(saveHourUserCount)'
         ]);

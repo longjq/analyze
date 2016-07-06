@@ -42,9 +42,9 @@ class RefreshController extends Controller
     public function userLives()
     {
         // 每日计算前一次的留存率
-        $this->loadAssistant->syncUserLive();
+        // $this->loadAssistant->syncUserLive();
         // 历史
-        $this->loadAssistant->liveHistory();
+        // $this->loadAssistant->liveHistory();
         // 今日
         $this->loadAssistant->liveToday();
         return redirect('/dash');

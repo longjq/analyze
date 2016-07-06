@@ -42,8 +42,7 @@ class UsersLive extends Command
         $d['memory_before'] = memory_get_usage();
 
         $load = new LoadAssistant();
-        $rows = $load->syncUserLive();
-        $this->info('Add Rows:' . $rows);
+        $load->syncUserLive();
 
         $d['Time'] = intval(time()) - intval($s);
         $d['memory_after'] = memory_get_usage();

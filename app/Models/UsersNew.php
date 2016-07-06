@@ -13,11 +13,23 @@ class UsersNew extends Model
     public $timestamps = false;
     protected $guarded = ['id'];
 
-    // 日期区间查询新增用户数
-    public function usersByDateRange($startDate, $endDate)
+    /**
+     * 指定日期的用户数
+     * @param $date
+     * @return mixed
+     */
+    public function usersBydate($date)
     {
-        return $this->where('row_date', '>=', $startDate)
-            ->where('row_date', '<=', $endDate)
-            ->get();
+        return $this->where('row_date', $date)->get();
+    }
+
+    /**
+     * 日期区间的用户数
+     * @param $dateRange
+     * @return mixed
+     */ 
+    public function usersByDateRange($dateRange)
+    {
+        return $this->whereBetween('row_date', $dateRange)->get();
     }
 }

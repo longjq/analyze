@@ -63,7 +63,8 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('/t', function (\Illuminate\Http\Request $request) {
 
     $load = new \App\Libraries\LoadAssistant();
-    $load->userHotRefresh();
+    $load->historyNews();
+    return '123';
 
 
 

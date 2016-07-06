@@ -112,8 +112,8 @@ class DateHelper
     public static function hourRange($timeStamp)
     {
         return [
-            date('Y-m-d H:00:00', $timeStamp),
-            date('Y-m-d H:59:59', $timeStamp),
+            strtotime(date('Y-m-d H:00:00', $timeStamp)),
+            strtotime(date('Y-m-d H:59:59', $timeStamp)),
         ];
     }
 

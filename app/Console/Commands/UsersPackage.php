@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Libraries\LoadAssistant;
+
 use Illuminate\Console\Command;
 class UsersPackage extends Command
 {
@@ -46,10 +47,9 @@ class UsersPackage extends Command
 
         $d['Time'] = intval(time()) - intval($s);
         $d['memory_after'] = memory_get_usage();
-        \App\Libraries\LogInfo::info('解析包名(packages),',$d);
-        // \App\Libraries\Cache::getInstance()->setString('last', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：解析包名(packages)');
-        \App\Models\Cache::where('key','last_query')->update([
-            'value' => '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：解析包名(packages)'
-        ]);
+
+        $cache = new \App\Models\Cache();
+        $cache->updateValue('last_query', '最后一次执行时间：'.date('Y-m-d H:i:s').', 操作：解析包名(packages),耗时：'.$d['Time']);
+       
     }
 }
