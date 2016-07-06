@@ -45,7 +45,7 @@ class ReportAgent
 
     public function info($item)
     {
-        if (empty($item)) {
+        if (empty($item) || is_null($item)) {
             return false;
         }
         $this->log($item);

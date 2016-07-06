@@ -129,9 +129,9 @@ values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']
         // 上月活跃
         $lastMonth = new DateHelper(strtotime('-1 month'));
         $lastMonthUsers = $this->hotUser->where('month', $lastMonth->getMonth())->where('year', $lastMonth->getYear())->get();
-        $countMonthUsersHot = $this->analyze->anayzleMonthCount($lastMonthUsers)[0];
+        $countMonthUsersHot = $this->analyze->anayzleMonthCount($lastMonthUsers);
         \App\Models\Cache::where('key', 'last_hot_month')->update([
-            'value' => $countMonthUsersHot,
+            'value' => array_sum($countMonthUsersHot),
         ]);
     }
 
@@ -182,10 +182,13 @@ values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']
 
         // 上月新增
         $lastMonth = new DateHelper(strtotime('-1 month'));
+
         $lastMonthUsersNew = $this->newUser->where('month', $lastMonth->getMonth())->where('year', $lastMonth->getYear())->get();
-        $countMonth = $this->analyze->anayzleMonthCount($lastMonthUsersNew)[0];
+
+        $countMonth = $this->analyze->anayzleMonthCount($lastMonthUsersNew);
+
         \App\Models\Cache::where('key', 'last_new_month')->update([
-            'value' => $countMonth,
+            'value' => array_sum($countMonth),
         ]);
     }
 

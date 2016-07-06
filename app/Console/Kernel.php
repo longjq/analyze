@@ -36,6 +36,7 @@ class Kernel extends ConsoleKernel
             ->hourly();
         $schedule->command('users:remove')
             ->daily();
-        // todo ... dash 首页刷新
+        $schedule->command('users:dash')
+            ->daily();
     }
 }

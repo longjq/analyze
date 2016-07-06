@@ -91,7 +91,6 @@ class AnalyzeHelper
         foreach($rows as $row){
             $countDays[] = $this->anayzleDayCount($row);
         }
-
         return count($countDays) > 0 ? $countDays : [0];
     }
 
