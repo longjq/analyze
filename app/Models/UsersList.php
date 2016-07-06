@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-use App\Traits\UserHourSave;
+
 use Illuminate\Database\Eloquent\Model;
 use DB;
 class UsersList extends Model
 {
-    use UserHourSave;
-    protected $table = 'assistant_users_list';
+  
+    protected $table = 'user_lists';
     public $timestamps = false;
     protected $primaryKey = 'user_id';
-    // 黑名单为空，所有字段都可以被操作
-    protected $guarded = [];
+    protected $fillable = [
+        'row_date','year','month','day',
+        'live_date','live','d7_date','d7',
+        'd15_date','d15','d30_date','d30'
+    ];
 
     /**
      * 指定日期获取用户总数
@@ -58,4 +61,21 @@ class UsersList extends Model
         return false;
     }
 
+    /**
+     * 保存小时用户数[新增]
+     * @param $count 用户数
+     * @param DateHelper $dateHelper 自定义日期对象
+     * @return mixed
+     */
+    public function saveUserCount($count, DateHelper $dateHelper){
+        $user = $this->firstOrNew([
+            'year' => $dateHelper->getYear(),
+            'month' => $dateHelper->getMonth(),
+            'day' => $dateHelper->getDay(),
+            'row_date' => $dateHelper->getDateFormat()
+        ]);
+        $field = 'hour'.intval($dateHelper->getHour());
+        $user->{$field} = $count;
+        return $user->save();
+    }
 }

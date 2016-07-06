@@ -158,6 +158,11 @@ class DateHelper
         return ['start' => $s, 'end' => $e];
     }
 
+    public static function lastDay()
+    {
+        return date('Y-m-d', strtotime('-1 days'));
+    }
+
 
     /**
      *  * 获取上n周的开始和结束，每周从周一开始，周日结束日期

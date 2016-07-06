@@ -86,6 +86,7 @@ class AnalyzeHelper
         return $titles;
     }
 
+
     public function anayzleMonthCount($rows){
         $countDays = [];
         foreach($rows as $row){

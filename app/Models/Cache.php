@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cache extends Model
 {
     protected $table = 'caches';
-    protected $guarded = ['id'];
+    protected $fillable = ['key','value'];
     public $timestamps = false;
 
     // 修改对应key的value值

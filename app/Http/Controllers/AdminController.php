@@ -31,6 +31,7 @@ class AdminController extends Controller
     public function dash()
     {
         $caches = Cache::lists('value', 'key');
+        $caches->put('total', $this->userList->count());
         return view('dash', compact('caches'));
     }
 

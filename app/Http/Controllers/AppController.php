@@ -13,7 +13,6 @@ use Excel;
 class AppController extends Controller
 {
     private $package;
-
     public function __construct()
     {
         $this->package = new Package();

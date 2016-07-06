@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UsersLive extends Model
 {
-    protected $table = 'assistant_users_live';
+    protected $table = 'user_lives';
     protected $guarded = [];
     public $primaryKey = 'row_date';
     public $timestamps = false;

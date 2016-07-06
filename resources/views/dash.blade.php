@@ -33,10 +33,7 @@
                 <div class="col-sm-12">
                     <h3 class="page-header" style="margin:0 0 20px;">新增数
                         <i class="icon icon-user"></i>
-                        <a href="/dash/new" class="btn btn-default pull-right ">
-                            <i class="glyphicon glyphicon-refresh"></i>
-                            刷新新增
-                        </a>
+
                     </h3>
                 </div>
                 <div class="col-sm-6">
@@ -138,9 +135,7 @@
                 <div class="col-sm-12">
                     <h3 class="page-header">活跃数
                         <i class="icon icon-user"></i>
-                        <a href="/dash/hot" class="btn btn-default pull-right ">
-                            <i class="glyphicon glyphicon-refresh"></i>
-                            刷新活跃</a>
+
 
                     </h3>
                 </div>
@@ -243,9 +238,6 @@
                 <div class="col-sm-12">
                     <h3 class="page-header">留存率
                         <i class="icon icon-user"></i>
-                        <a href="/dash/live" class="btn btn-default pull-right ">
-                            <i class="glyphicon glyphicon-refresh"></i>
-                            刷新留存</a>
                     </h3>
                 </div>
                 <div class="col-sm-6">

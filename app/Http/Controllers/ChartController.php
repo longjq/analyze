@@ -6,29 +6,42 @@ use App\Libraries\AnalyzeHelper;
 use App\Libraries\DateHelper;
 use App\Libraries\DBQueryHelper;
 
+use App\Models\CountHot;
+use App\Models\CountNew;
 use App\Models\LiveCount;
 use App\Models\UsersList;
 use App\Models\UsersLive;
 use App\Models\UsersNew;
+use App\Models\UserTempHot;
+use App\Models\UserTempImei;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
 class ChartController extends Controller
 {
+    private $countNew;
+    private $countHot;
+    private $imei;
+    private $userHot;
+
     private $usersNew;  // 新增用户
     private $usersHot;  // 活跃用户
     private $usersList; // 存活率
     private $anayzle; // 分析
     private $usersLive; // 平均存活率
-    private $liveCount; //每日活跃数
+
     public function __construct()
     {
+        $this->countNew = new CountNew();
+        $this->countHot = new CountHot();
+        $this->imei = new UserTempImei();
+        $this->userHot = new UserTempHot();
+
         $this->usersNew = new UsersNew();
         $this->usersList = new UsersList;
         $this->anayzle = new AnalyzeHelper;
         $this->usersLive = new UsersLive;
-        $this->liveCount = new LiveCount();
     }
 
     // 新增用户统计数据
@@ -36,11 +49,13 @@ class ChartController extends Controller
         $data = [];
         if($request->isMethod('get')){
             $d = DateHelper::monthRange(date('Y-m-d'));
-            $rows = $this->usersNew->usersByDateRange($d[0], $d[1]);
-
+            $rows = $this->countNew->dataByDateRange($d);
+            if (count($rows) > 0) {
+                $today = $this->imei->countByDate(DateHelper::thisToday());
+                $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
+            }
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $this->anayzle->anayzleMonthCount($rows->toArray());
-
+            $data['datas'] = $rows->pluck('count')->toArray();
             return view('charts/users_new', compact('data'));
         }
 
@@ -48,11 +63,13 @@ class ChartController extends Controller
         $month = $request->input('month');
 
         $d = DateHelper::monthRange("{$year}-{$month}-1");
-        $rows = $this->usersNew->usersByDateRange($d[0], $d[1]);
-
+        $rows = $this->countNew->dataByDateRange($d);
+        if (count($rows) > 0) {
+            $today = $this->imei->countByDate(DateHelper::thisToday());
+            $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
+        }
         $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-        $data['datas'] = $this->anayzle->anayzleMonthCount($rows->toArray());
-
+        $data['datas'] = $rows->pluck('count')->toArray();
         return view('charts/users_new', compact('data'));
     }
 
@@ -60,12 +77,14 @@ class ChartController extends Controller
     public function usersHot(Request $request){
         $data = [];
         if($request->isMethod('get')){
-            $dateHelper = new DateHelper(time());
-
-            $rows = $this->liveCount->usersByDateRange($dateHelper);
-
+            $d = DateHelper::monthRange(date('Y-m-d'));
+            $rows = $this->countHot->dataByDateRange($d);
+            if (count($rows) > 0) {
+                $today = $this->userHot->countByDate(DateHelper::thisToday());
+                $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
+            }
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $rows->pluck('live_count')->toArray();
+            $data['datas'] = $rows->pluck('count')->toArray();
 
             return view('charts/users_hot', compact('data'));
         }
@@ -74,10 +93,15 @@ class ChartController extends Controller
         $month = $request->input('month');
 
         $d = DateHelper::monthRange("{$year}-{$month}-1");
-        $rows = $this->usersHot->usersByDateRange($d[0], $d[1]);
+        $rows = $this->countHot->dataByDateRange($d);
+
+        if (count($rows) > 0){
+            $today = $this->userHot->countByDate(DateHelper::thisToday());
+            $rows->push(['row_date' => DateHelper::thisToday(),'count'=>$today]);
+        }
 
         $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-        $data['datas'] = $this->anayzle->anayzleMonthCount($rows->toArray());
+        $data['datas'] = $rows->pluck('count')->toArray();
 
         return view('charts/users_hot', compact('data'));
     }
