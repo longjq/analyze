@@ -11,6 +11,20 @@ class Package extends Model
     public $timestamps = false;
     protected $fillable = ['name', 'package', 'user_count', 'md5', 'users'];
 
+    public function updatePackageItem($item)
+    {
+        $packages = json_decode($item['packages']);
+        foreach($packages as $package){
+            $md5 = isset($package[3]) ? $package[3] : null;
+            // 插入包名列表和包名=》用户id
+            DB::insert("INSERT into apps (`package`,`name`,`users`,`md5`,`user_count`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE users= CONCAT(VALUES(`users`),',',`users`),md5=VALUES(`md5`),user_count = user_count+1",
+                [$package[1],$package[0],$item['user_id'],$md5,1]);
+            //  DB::insert("REPLACE INTO apps(`package`,`name`,`users`,`user_count`) VALUES(?,?,?,?)",[$package[1],$package[0],$item['user_id'],1]);
+        }
+        // 建立用户id=>包名关系
+        return DB::update("update apps_user_list set decode = 1 where user_id = ?",[$item['user_id']]);
+    }
+
     public function packagesListByUid($userId)
     {
         $packages = DB::table('apps_user_list')->where('user_id', $userId)->lists('packages');

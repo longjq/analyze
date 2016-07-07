@@ -43,7 +43,7 @@ class LoadAssistant
         $lists = DB::table('apps_user_list')->where('decode',0)->take($len)->get();
         DB::beginTransaction();
         foreach ($lists as $key => $value) {
-            $this->userList->updatePackageItem((array)$value);
+            $this->package->updatePackageItem((array)$value);
         }
         DB::commit();
     }

@@ -11,7 +11,7 @@ class UserTempHot extends Model
 
     public function countByDate($date)
     {
-        return $this->where('row_date', $date)->where('user_id','!=','')->count();
+        return $this->where('row_date', $date)->where('user_id','!=','0')->count();
     }
 
     public function deleteByDate($date)
