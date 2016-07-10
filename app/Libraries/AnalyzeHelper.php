@@ -11,6 +11,45 @@ namespace App\Libraries;
 
 class AnalyzeHelper
 {
+    // 计算存活率平均值
+    public function caclLiveAvg($lives)
+    {
+        $d1Count = 0;
+        $d7Count = 0;
+        $d15Count = 0;
+        $d30Count = 0;
+        $d1Avg = 0;
+        $d7Avg = 0;
+        $d15Avg = 0;
+        $d30Avg = 0;
+        foreach ($lives as $live){
+            $live->live > 0 && $d1Count++;
+            $live->d7 > 0 && $d7Count++;
+            $live->d15 > 0 && $d15Count++;
+            $live->d30 > 0 && $d30Count++;
+        }
+        
+        if ($lives->sum('live') != 0 && $d1Count != 0){
+            $d1Avg = round($lives->sum('live') / $d1Count, 2);
+        }
+        if ($lives->sum('d7') != 0 && $d7Count != 0){
+            $d7Avg = round($lives->sum('d7') / $d7Count, 2);
+        }
+        if ($lives->sum('d15') != 0 && $d15Count != 0){
+            $d15Avg = round($lives->sum('d15') / $d15Count, 2);
+        }
+        if ($lives->sum('d30') != 0 && $d30Count != 0){
+            $d30Avg = round($lives->sum('d30') / $d30Count, 2);
+        }
+        
+        return [
+            'd1' => $d1Avg,
+            'd7' => $d7Avg,
+            'd15' => $d15Avg,
+            'd30' => $d30Avg,
+        ];
+    }
+
     public function liveAvg($users)
     {
         $count = count($users);

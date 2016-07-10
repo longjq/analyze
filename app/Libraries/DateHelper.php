@@ -155,7 +155,13 @@ class DateHelper
         $t = strtotime('-1 day');
         $s = date('Y-m-d 00:00:00', $t);
         $e = date('Y-m-d 23:59:59', $t);
-        return ['start' => $s, 'end' => $e];
+        return [strtotime($s), strtotime($e)];
+    }
+
+    // 一年中的第几周
+    public static function weekOfYear($dateStr)
+    {
+        return date('W',strtotime ( $dateStr ));
     }
 
     public static function lastDay()
@@ -190,6 +196,25 @@ class DateHelper
         ];
     }
 
+    public static function lastNWeekTime($ts, $n, $format = '%Y-%m-%d'){
+        $ts = intval($ts);
+        $n = abs(intval($n));
+
+        // 周一到周日分别为1-7
+        $dayOfWeek = date('w', $ts);
+        if(0 == $dayOfWeek)
+        {
+            $dayOfWeek = 7;
+        }
+
+        $lastNMonday = 7 * $n + $dayOfWeek - 1;
+        $lastNSunday = 7 * ($n - 1) + $dayOfWeek;
+        return [
+            strtotime(strftime($format, strtotime("-{$lastNMonday} day", $ts)).' 0:0:0'),
+            strtotime(strftime($format, strtotime("-{$lastNSunday} day", $ts)). '23:59:59')
+        ];
+    }
+
 
     //上月
     public static function lastMonth($t)
@@ -197,6 +222,12 @@ class DateHelper
         $timestamp = $t;
         $firstday = date('Y-m-01', strtotime(date('Y', $timestamp) . '-' . (date('m', $timestamp) - 1) . '-01'));
         $lastday = date('Y-m-d', strtotime("$firstday +1 month -1 day"));
+        return array($firstday, $lastday);
+    }
+    
+    public static function lastMonthTime($timestamp){
+        $firstday = date('Y-m-01 0:0:0', strtotime(date('Y', $timestamp) . '-' . (date('m', $timestamp) - 1) . '-01'));
+        $lastday = date('Y-m-d 23:59:59', strtotime("$firstday +1 month -1 day"));
         return array($firstday, $lastday);
     }
 

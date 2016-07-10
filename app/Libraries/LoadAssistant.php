@@ -26,7 +26,6 @@ class LoadAssistant
         $this->package = new \App\Models\Package();
         $this->analyze = new \App\Libraries\AnalyzeHelper();
         $this->cache = new \App\Models\Cache();
-        $this->liveCount = new \App\Models\LiveCount();
     }
 
     // 记录每日用户活跃数
@@ -40,7 +39,7 @@ class LoadAssistant
     // 定时解包
     public function decodePackages($len)
     {
-        $lists = DB::table('apps_user_list')->where('decode',0)->take($len)->get();
+        $lists = DB::table('apps_user_lists')->where('decode',0)->take($len)->get();
         DB::beginTransaction();
         foreach ($lists as $key => $value) {
             $this->package->updatePackageItem((array)$value);
@@ -53,36 +52,32 @@ class LoadAssistant
      */
     public function syncUserLive()
     {
-//        $userCount = $this->listUser->count();
-//        if ($userCount == 0) return false;
-//        $dayDate = DateHelper::fewDaysAgo(2);
-//        $dateTime = DateHelper::dateTimeRange($dayDate);
-//
-//        $this->listUser->usersByTimeRangeCount('ctime', $dateTime[0],$dateTime[1]);
-//
-//        $usersCount['d1'] = $this->listUser->where('ctime','>=',$dateTime[0])
-//            ->where('ctime','<=',$dateTime[1])
-//            ->where('mtime', '>=', intval($dateTime[0]) + 86400)
-//            ->count();
-//        $usersCount['d7'] = $this->listUser->where('ctime','>=',$dateTime[0])
-//            ->where('ctime','<=',$dateTime[1])
-//            ->where('mtime', '>=', intval($dateTime[0]) + 86400 * 6)
-//            ->count();
-//        $usersCount['d30'] = $this->listUser->where('ctime','>=',$dateTime[0])
-//            ->where('ctime','<=',$dateTime[1])
-//            ->where('mtime', '>=', intval($dateTime[0]) + 86400 * 29)
-//            ->count();
-//	if (count($usersCount) == 0){ return false;}
-//        $avgDay = round($usersCount['d1'] / $userCount, 2) * 100;
-//        $data = [
-//            'row_date' =>  $dayDate,
-//            'year' => date('Y', strtotime($dayDate)),
-//            'month' => date('m', strtotime($dayDate)),
-//            'day' => date('d', strtotime($dayDate)),
-//            'live' => $avgDay
-//        ];
-//        return DB::insert("insert into assistant_users_live(row_date,year,month,day,live)
-//values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']}','{$data['live']}') ON DUPLICATE KEY UPDATE live = values(`live`)");
+        $userCount = $this->listUser->count();
+
+        $dayDate = DateHelper::fewDaysAgo(2);
+        $dateTime = DateHelper::dateTimeRange($dayDate);
+
+
+        $usersCount['d1'] = $this->listUser->userDateRange('ctime', $dateTime)
+            ->where('mtime', '>=', intval($dateTime[0]) + 86400 )
+            ->count();
+        $usersCount['d7'] = $this->listUser->userDateRange('ctime', $dateTime)
+            ->where('mtime', '>=', intval($dateTime[0]) + 86400 * 6)
+            ->count();
+        $usersCount['d30'] = $this->listUser->userDateRange('ctime', $dateTime)
+            ->where('mtime', '>=', intval($dateTime[0]) + 86400 * 29)
+            ->count();
+
+        $avgDay = round($usersCount['d1'] / $userCount, 2) * 100;
+        $data = [
+            'row_date' =>  $dayDate,
+            'year' => date('Y', strtotime($dayDate)),
+            'month' => date('m', strtotime($dayDate)),
+            'day' => date('d', strtotime($dayDate)),
+            'live' => $avgDay
+        ];
+        return DB::insert("insert into assistant_users_live(row_date,year,month,day,live)
+values('{$data['row_date']}','{$data['year']}','{$data['month']}','{$data['day']}','{$data['live']}') ON DUPLICATE KEY UPDATE live = values(`live`)");
 
     }
 
@@ -231,7 +226,6 @@ class LoadAssistant
         $this->cache->updateValue('now_avg_month', $avgMonth);
         $this->cache->updateValue('now_avg_month_date', $monthDate);
 
-        // DB::insert("INSERT into assistant_users_live (`row_date`,`year`,`month`,`day`,`live`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE live=VALUES(`live`)",[date('Y-m-d', $dateTime[0]), date('Y', $dateTime[0]), date('m', $dateTime[0]), date('d', $dateTime[0]), $avgDay]);
         $this->liveUser->saveLiveDate(new DateHelper(time()), $data);
     }
 

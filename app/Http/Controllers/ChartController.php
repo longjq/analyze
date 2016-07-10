@@ -9,6 +9,9 @@ use App\Libraries\DBQueryHelper;
 use App\Models\CountHot;
 use App\Models\CountNew;
 use App\Models\LiveCount;
+use App\Models\RecordDay;
+use App\Models\RecordMonth;
+use App\Models\RecordWeek;
 use App\Models\UsersList;
 use App\Models\UsersLive;
 use App\Models\UsersNew;
@@ -31,12 +34,20 @@ class ChartController extends Controller
     private $anayzle; // 分析
     private $usersLive; // 平均存活率
 
+    private $recordDay;
+    private $recordWeek;
+    private $recordMonth;
+
     public function __construct()
     {
         $this->countNew = new CountNew();
         $this->countHot = new CountHot();
         $this->imei = new UserTempImei();
         $this->userHot = new UserTempHot();
+
+        $this->recordDay = new RecordDay();
+        $this->recordWeek = new RecordWeek();
+        $this->recordMonth = new RecordMonth();
 
         $this->usersNew = new UsersNew();
         $this->usersList = new UsersList;
@@ -49,13 +60,10 @@ class ChartController extends Controller
         $data = [];
         if($request->isMethod('get')){
             $d = DateHelper::monthRange(date('Y-m-d'));
-            $rows = $this->countNew->dataByDateRange($d);
-            if (count($rows) > 0) {
-                $today = $this->imei->countByDate(DateHelper::thisToday());
-                $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
-            }
+            $rows = $this->recordDay->dataByDateRange($d);
+
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $rows->pluck('count')->toArray();
+            $data['datas'] = $rows->pluck('new')->toArray();
             return view('charts/users_new', compact('data'));
         }
 
@@ -63,13 +71,10 @@ class ChartController extends Controller
         $month = $request->input('month');
 
         $d = DateHelper::monthRange("{$year}-{$month}-1");
-        $rows = $this->countNew->dataByDateRange($d);
-        if (count($rows) > 0) {
-            $today = $this->imei->countByDate(DateHelper::thisToday());
-            $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
-        }
+        $rows = $this->recordDay->dataByDateRange($d);
+
         $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-        $data['datas'] = $rows->pluck('count')->toArray();
+        $data['datas'] = $rows->pluck('new')->toArray();
         return view('charts/users_new', compact('data'));
     }
 
@@ -78,30 +83,18 @@ class ChartController extends Controller
         $data = [];
         if($request->isMethod('get')){
             $d = DateHelper::monthRange(date('Y-m-d'));
-            $rows = $this->countHot->dataByDateRange($d);
-            if (count($rows) > 0) {
-                $today = $this->userHot->countByDate(DateHelper::thisToday());
-                $rows->push(['row_date' => DateHelper::thisToday(), 'count' => $today]);
-            }
+            $rows = $this->recordDay->dataByDateRange($d);
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $rows->pluck('count')->toArray();
-
+            $data['datas'] = $rows->pluck('hot')->toArray();
             return view('charts/users_hot', compact('data'));
         }
 
         $year = $request->input('year');
         $month = $request->input('month');
-
         $d = DateHelper::monthRange("{$year}-{$month}-1");
-        $rows = $this->countHot->dataByDateRange($d);
-
-        if (count($rows) > 0){
-            $today = $this->userHot->countByDate(DateHelper::thisToday());
-            $rows->push(['row_date' => DateHelper::thisToday(),'count'=>$today]);
-        }
-
+        $rows = $this->recordDay->dataByDateRange($d);
         $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-        $data['datas'] = $rows->pluck('count')->toArray();
+        $data['datas'] = $rows->pluck('hot')->toArray();
 
         return view('charts/users_hot', compact('data'));
     }
@@ -134,7 +127,7 @@ class ChartController extends Controller
             return view('charts/users_list', compact('startTime','endTime'));
         }
 
-        $livePer = $this->anayzle->liveAvg($usersList);
+        $livePer = $this->anayzle->caclLiveAvg($usersList);
 
         return view('charts/users_list', compact('livePer', 'startTime', 'endTime'));
 //        // 次日平均留存率

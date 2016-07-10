@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,14 +14,11 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\UserTemp::class,              // 每日零点十分保存前一日的新增数和活跃数
-        Commands\Count::class,                 // 更新总数数据
+        Commands\RecordUsers::class,           // 每日凌晨5分更新，昨日、上周、上月数据
+        Commands\RecordLives::class,           // 每日凌晨10分，更新当日的次日、7天、15天、39天存活率
+        Commands\RecordLivesAvg::class,        // 每日凌晨15分，更新至历史的7天、15天、39天平均存活率
+        Commands\RefreshUsers::class,          // 每30分钟更新，今日、本周、本月
         Commands\UsersPackage::class,          // 解包
-        // Commands\UsersHourCount::class,
-        // Commands\UsersLive::class,
-
-        // Commands\UsersLiveDateCount::class,
-        // Commands\LiveCount::class,
     ];
 
     /**
@@ -31,30 +29,25 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // 每日零点十五分保存前一日的新增数和活跃数
-        $schedule->command('users:temp')
+        // 每日凌晨5分更新，昨日、上周、上月数据
+        $schedule->command('record:users')
+            ->dailyAt('0:5');
+
+        // 每日凌晨10分，更新当日的次日、7天、15天、39天存活率
+        $schedule->command('record:lives')
+            ->dailyAt('0:10');
+
+        // 每日凌晨15分，更新至历史的7天、15天、39天平均存活率
+        $schedule->command('record:lives_avg')
             ->dailyAt('0:15');
 
-        // 十分钟更新一次dash数据
-        $schedule->command('users:count')
-            ->everyTenMinutes();
+        // 每30分钟更新，今日、本周、本月
+        $schedule->command('refresh:users')
+            ->everyThirtyMinutes();
 
         // 每五分钟解一次包数据
         $schedule->command('users:package')
             ->everyFiveMinutes();
-
-        
-//
-//        $schedule->command('users:hour')
-//            ->hourly();
-//        $schedule->command('users:live')
-//            ->daily();
-
-//        $schedule->command('users:date_count')
-//            ->hourly();
-//        $schedule->command('users:live_count')
-//            ->daily();
-
         
     }
 }

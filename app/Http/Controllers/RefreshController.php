@@ -46,7 +46,7 @@ class RefreshController extends Controller
         // 历史
         // $this->loadAssistant->liveHistory();
         // 今日
-        $this->loadAssistant->liveToday();
+        
         return redirect('/dash');
     }
 }

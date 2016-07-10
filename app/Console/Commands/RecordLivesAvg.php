@@ -2,24 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Libraries\LoadAssistant;
+use App\Libraries\Record;
 use Illuminate\Console\Command;
 
-class LiveCount extends Command
+class RecordLivesAvg extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'users:live_count';
+    protected $signature = 'record:lives_avg';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'users live_count';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -38,7 +38,7 @@ class LiveCount extends Command
      */
     public function handle()
     {
-        $load = new LoadAssistant();
-        $load->liveCount();
+        $record = new Record();
+        $record->liveAvg();
     }
 }

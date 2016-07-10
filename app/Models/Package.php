@@ -22,7 +22,7 @@ class Package extends Model
             //  DB::insert("REPLACE INTO apps(`package`,`name`,`users`,`user_count`) VALUES(?,?,?,?)",[$package[1],$package[0],$item['user_id'],1]);
         }
         // 建立用户id=>包名关系
-        return DB::update("update apps_user_list set decode = 1 where user_id = ?",[$item['user_id']]);
+        return DB::update("update apps_user_lists set decode = 1 where user_id = ?",[$item['user_id']]);
     }
 
     public function packagesListByUid($userId)

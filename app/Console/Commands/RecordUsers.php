@@ -2,17 +2,18 @@
 
 namespace App\Console\Commands;
 
-use App\Libraries\UserTempBrige;
+use App\Libraries\Record;
+
 use Illuminate\Console\Command;
 
-class UserTemp extends Command
+class RecordUsers extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'users:temp';
+    protected $signature = 'record:users';
 
     /**
      * The console command description.
@@ -38,8 +39,19 @@ class UserTemp extends Command
      */
     public function handle()
     {
-        // 记录每日新增用户总数和每日活动用户总数
-        $load = new UserTempBrige();
-        $load->load2DB();
+        $record = new Record();
+        // 上月
+        if (date('d') == 1){
+            $record->recordMonth();
+        }
+        //$record->recordMonth();
+        // $record->recordWeek();
+        // 上周
+        if (date('w') == 1){
+            $record->recordWeek();
+        }
+        // 昨天
+        $record->recordDay();
+        
     }
 }

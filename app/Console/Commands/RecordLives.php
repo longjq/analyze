@@ -2,24 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Libraries\LoadAssistant;
+use App\Libraries\Record;
 use Illuminate\Console\Command;
 
-class UsersLiveDateCount extends Command
+class RecordLives extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'users:date_count';
+    protected $signature = 'record:lives';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'users date_count';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -38,8 +38,7 @@ class UsersLiveDateCount extends Command
      */
     public function handle()
     {
-        $load = new LoadAssistant();
-        // 每小时记录
-        $load->userLiveHot();
+        $record = new Record();
+        $record->liveToday();
     }
 }
