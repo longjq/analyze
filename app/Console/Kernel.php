@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         Commands\RecordLives::class,           // 每日凌晨10分，更新当日的次日、7天、15天、39天存活率
         Commands\RecordLivesAvg::class,        // 每日凌晨15分，更新至历史的7天、15天、39天平均存活率
         Commands\RefreshUsers::class,          // 每30分钟更新，今日、本周、本月
-        Commands\UsersPackage::class,          // 解包
+        Commands\UsersPackage::class,          // 
+        Commands\UnpackPackages::class,        // 新版本解包
     ];
 
     /**
@@ -46,7 +47,7 @@ class Kernel extends ConsoleKernel
             ->everyThirtyMinutes();
 
         // 每五分钟解一次包数据
-        $schedule->command('users:package')
+        $schedule->command('unpack:packages')
             ->everyFiveMinutes();
         
     }

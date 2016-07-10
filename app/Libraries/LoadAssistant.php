@@ -23,7 +23,7 @@ class LoadAssistant
 
         $this->listUser = new \App\Models\UsersList();
         $this->liveUser = new \App\Models\UsersLive();
-        $this->package = new \App\Models\Package();
+        $this->package = new \App\Models\Apps();
         $this->analyze = new \App\Libraries\AnalyzeHelper();
         $this->cache = new \App\Models\Cache();
     }

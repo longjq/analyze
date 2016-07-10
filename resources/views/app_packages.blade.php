@@ -54,8 +54,8 @@
                 <tbody>
                 @foreach($packages as $package)
                     <tr>
-                        <td>{{ isset($package->package) ? $package->package : $package[1] }}</td>
-                        <td>{{ isset($package->name) ? $package->name : $package[0] }}</td>
+                        <td>{{ isset($package->package_unique) ? $package->package_unique : $package[1] }}</td>
+                        <td>{{ isset($package->package_title) ? $package->package_title : $package[0] }}</td>
                         @if(isset($package->user_count))
                         <td class="text-center">
                                 <button data-id="{{ $package->id }}" class="btn btn-success user_detail">

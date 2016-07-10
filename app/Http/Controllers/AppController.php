@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Libraries\DBQueryHelper;
 use App\Libraries\ExcelHelper;
+use App\Models\Apps;
 use App\Models\Package;
+use App\Models\UserPackage;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -13,9 +15,13 @@ use Excel;
 class AppController extends Controller
 {
     private $package;
+    private $pack;
+    private $userPackage;
     public function __construct()
     {
-        $this->package = new Package();
+        $this->package = new Apps();
+        $this->pack = new Package();
+        $this->userPackage = new UserPackage();
     }
 
     /**
@@ -27,7 +33,7 @@ class AppController extends Controller
     public function packages(Request $request)
     {
         if ($request->isMethod('get')) {
-            $packages = $this->package->orderBy('user_count', 'desc')->paginate(15);
+            $packages = $this->pack->orderBy('user_count', 'desc')->paginate(15);
             return view('app_packages', compact('packages'));
         }
         $userId = trim($request->input('user_id'));
@@ -35,9 +41,11 @@ class AppController extends Controller
         $name = trim($request->input('name'));
         if(empty($userId) && empty($package) && empty($name)) return redirect('app/packages');
         if(!empty($userId)){
-            $packages = $this->package->packagesListByUid($userId);
+            // $packages = $this->package->packagesListByUid($userId);
+            $packages = $this->pack->listsByUserId($userId);
         }else{
-            $packages = $this->package->packagesList($package, $name);
+            // $packages = $this->package->packagesList($package, $name);
+            $packages = $this->pack->packagesList($package, $name);
         }
         if(is_null($packages)) return redirect('app/packages');
         return view('app_packages', compact('packages', 'package', 'name', 'userId'));
@@ -47,7 +55,7 @@ class AppController extends Controller
     {
         if($request->ajax()){
             $packageId = $request->input('pid');
-            $package = Package::find($packageId);
+            $package = Apps::find($packageId);
             return response()->json(['data'=>$package->users()->count()],200);
             //return response()->json(['data'=>6],200);
         }
@@ -85,18 +93,22 @@ class AppController extends Controller
 
         $and = DBQueryHelper::inOperator($where, 'and');
         $and[] = array_shift($where)['col'];
-        $andItems = $this->package->whereIn('package', $and)->get(['users'])->toArray();
-        $ids = DBQueryHelper::explodeIds($andItems);
-
-        $or = DBQueryHelper::inOperator($where, 'or');
-        if(count($or) != 0){
-            $orItems = $this->package->whereIn('package', $or)->get(['users']);
-            $ids .= ','. DBQueryHelper::explodeIds($orItems);
+        $query = $this->userPackage->newQuery();
+        foreach ($and as $condition){
+            $query = $query->where('package_unique',$condition);
         }
-        $ids = array_filter(array_unique(explode(',', $ids)));
-        $ids = array_map(function($id){
-            return [$id];
-        }, $ids);
+        $ids = $query->distinct()->lists('user_id')->toArray();
+        // $ids = $this->userPackage->whereIn('package_unique', $and)->distinct()->lists('user_id')->toArray();
+
+//        $or = DBQueryHelper::inOperator($where, 'or');
+//        if(count($or) != 0){
+//            $orItems = $this->package->whereIn('package_unique', $or)->get(['users']);
+//            $ids .= ','. DBQueryHelper::explodeIds($orItems);
+//        }
+//        $ids = array_filter(array_unique(explode(',', $ids)));
+//        $ids = array_map(function($id){
+//            return [$id];
+//        }, $ids);
 
         if (count($ids) > 0) {
             array_unshift($ids, ['用户ID']);

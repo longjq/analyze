@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class Package extends Model
+class Apps extends Model
 {
     protected $table = 'apps';
     public $timestamps = false;
