@@ -37,8 +37,13 @@ class UnpackPackages extends Command
      */
     public function handle()
     {
+        $s = time();
         $unpack = new \App\Libraries\UnpackPackages();
         
-        $unpack->unpack(5);
+        $unpack->unpack(100);
+        $d['Time'] = intval(time()) - intval($s);
+        $cache = new \App\Models\Cache();
+        $cache->updateValue('last_query', '最后一次执行时间：'.date('Y-m-d H:i:s').', 
+        操作：每五分钟解一次包数据),耗时：'.$d['Time'].'s');
     }
 }
