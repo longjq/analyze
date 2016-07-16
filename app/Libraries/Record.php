@@ -46,7 +46,7 @@ class Record
         $avg = $this->analyze->caclLiveAvg($lives);
         $this->cache->updateValue('last_avg_day', $avg['d1']);
         $this->cache->updateValue('last_avg_seven_day',  $avg['d7']);
-        $this->cache->updateValue('last_avg_thirty_day',  $avg['d15']);
+        $this->cache->updateValue('last_avg_thirty_day',  $avg['d30']);
     }
 
 
