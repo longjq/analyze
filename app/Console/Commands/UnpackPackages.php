@@ -40,10 +40,11 @@ class UnpackPackages extends Command
         $s = time();
         $unpack = new \App\Libraries\UnpackPackages();
         
-        $unpack->unpack(100);
+        $unpack->unpack(1000);
         $d['Time'] = intval(time()) - intval($s);
         $cache = new \App\Models\Cache();
         $cache->updateValue('last_query', '最后一次执行时间：'.date('Y-m-d H:i:s').', 
         操作：每五分钟解一次包数据),耗时：'.$d['Time'].'s');
+        
     }
 }

@@ -34,8 +34,8 @@ class UnpackPackages
             $packages = json_decode($undecode->packages);
             $this->userPackage->deleteUser($undecode->user_id);
             foreach ($packages as $package){
-                $this->userPackage->attachUserPackage($undecode->user_id, $package[1]);
-                $this->package->syncItem([$package[0],$package[1],$package[2]]);
+                $this->userPackage->attachUserPackage($undecode->user_id, $package);
+                $this->package->syncItem([$package[0],$package[1],isset($package[3]) ? $package[3] : null]);
             }
             $undecode->decode=1;
             $undecode->save();

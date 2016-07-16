@@ -31,6 +31,11 @@
                         <input name="name" value="@if(isset($name)){{$name}}@endif" type="text" class="form-control"
                                id="name" placeholder="输入应用名称">
                     </div>
+                    <div class="form-group">
+                        <label>
+                            有MD5 <input type="checkbox" name="is_md5" value="1">
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-primary">查询</button>
                 </form>
             </div>
@@ -72,21 +77,4 @@
             </table>
         </div>
     </div>
-@endsection
-
-@section('js')
-    {{--<script>--}}
-    {{--$(function () {--}}
-    {{--$('.user_detail').on('click', function () {--}}
-    {{--$btn = $(this);--}}
-    {{--if($btn.has('span').length){--}}
-    {{--return false;--}}
-    {{--}else{--}}
-    {{--$.get('/app/package_detail', {pid: $(this).data('id')}, function (d) {--}}
-    {{--$btn.append(' <span class="badge">' + d.data + '</span>')--}}
-    {{--});--}}
-    {{--}--}}
-    {{--})--}}
-    {{--})--}}
-    {{--</script>--}}
 @endsection
