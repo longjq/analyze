@@ -62,7 +62,7 @@
             text: '活跃用户曲线图'
         };
         json.subtitle = {
-            text: ''
+            text: '合计总数：{{ array_sum($data['datas'])  }}'
         };
         json.xAxis = {
             categories: [{!! $data['titles'] !!}]
@@ -85,6 +85,16 @@
             align: 'right',
             verticalAlign: 'middle',
             borderWidth: 0
+        };
+        json.plotOptions = {
+            line: {
+                dataLabels: {
+                    enabled: true,
+                    color:'#aaa'
+                },
+
+                enableMouseTracking: false
+            }
         };
         json.series = [
             {

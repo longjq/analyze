@@ -39,14 +39,18 @@ class AppController extends Controller
         $userId = trim($request->input('user_id'));
         $package = trim($request->input('package'));
         $name = trim($request->input('name'));
+        $isMd5 = $request->input('is_md5');
+        
         if(empty($userId) && empty($package) && empty($name)) return redirect('app/packages');
+        
         if(!empty($userId)){
             // $packages = $this->package->packagesListByUid($userId);
-            $packages = $this->pack->listsByUserId($userId);
+            $packages = $this->pack->listsByUserId($userId,$isMd5);
         }else{
             // $packages = $this->package->packagesList($package, $name);
-            $packages = $this->pack->packagesList($package, $name);
+            $packages = $this->pack->packagesList($package, $name, $isMd5);
         }
+        
         if(is_null($packages)) return redirect('app/packages');
         return view('app_packages', compact('packages', 'package', 'name', 'userId'));
     }

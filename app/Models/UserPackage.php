@@ -8,7 +8,7 @@ class UserPackage extends Model
 {
     protected $table = 'user_packages';
     public $timestamps = false;
-    protected $fillable = ['user_id', 'package_unique'];
+    protected $fillable = ['user_id', 'package_unique','package_title','md5'];
 
     public function package()
     {
@@ -20,11 +20,13 @@ class UserPackage extends Model
         $this->where('user_id',$userId)->delete();
     }
 
-    public function attachUserPackage($userId, $packageUnique)
+    public function attachUserPackage($userId, $package)
     {
+        
         $this->create([
             'user_id' => $userId,
-            'package_unique' => $packageUnique,
+            'package_unique' => $package[1],
+            
         ]);
     }
 }

@@ -25,7 +25,8 @@ class Refresh
     {
         // 今日新增、活跃
         $countNews = $this->usersList->userDateRangeCount('ctime', DateHelper::thisTodayTime());
-        $countHots = $this->usersList->userDateRangeCount('mtime', DateHelper::thisTodayTime());
+        $countHots = $this->usersList->userDateRange('mtime', DateHelper::thisTodayTime())
+            ->whereNotNull('imei')->count();
         $this->cache->updateValue('now_new_day', $countNews);
         $this->cache->updateValue('now_hot_day', $countHots);
     }
@@ -34,7 +35,8 @@ class Refresh
     {
         // 本周新增、活跃
         $countNews = $this->usersList->userDateRangeCount('ctime', DateHelper::thisWeekTime());
-        $countHots = $this->usersList->userDateRangeCount('mtime', DateHelper::thisWeekTime());
+        $countHots = $this->usersList->userDateRange('mtime', DateHelper::thisWeekTime())
+            ->whereNotNull('imei')->count();
         $this->cache->updateValue('now_new_week', $countNews);
         $this->cache->updateValue('now_hot_week', $countHots);
     }
@@ -43,7 +45,8 @@ class Refresh
     {
         // 本月新增、活跃
         $countNews = $this->usersList->userDateRangeCount('ctime', DateHelper::thisMonthTime());
-        $countHots = $this->usersList->userDateRangeCount('mtime', DateHelper::thisMonthTime());
+        $countHots = $this->usersList->userDateRange('mtime', DateHelper::thisMonthTime())
+            ->whereNotNull('imei')->count();
         $this->cache->updateValue('now_new_month', $countNews);
         $this->cache->updateValue('now_hot_month', $countHots);
     }
