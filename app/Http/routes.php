@@ -12,7 +12,10 @@
 */
 
 Route::get('/see', function(){
-    return view('welcome');
+    $package = new \App\Models\Package();
+    $packages = $package->lists()->take(15)->get();
+
+    return '123';
 });
 
 Route::get('/', function () {
@@ -26,12 +29,6 @@ Route::get('/logout', 'LoginController@logout');
 Route::group(['middleware' => 'auth'], function () {
     // 后台首页
     Route::get('/dash', 'AdminController@dash');
-
-    Route::get('/dash/new', 'RefreshController@userNews');
-    Route::get('/dash/hot', 'RefreshController@userHots');
-    Route::get('/dash/live', 'RefreshController@userLives');
-    
-
 
     // 字段导出用户id
     Route::match(['get', 'post'], '/user/data', 'AdminController@userData');

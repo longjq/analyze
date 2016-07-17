@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\RefreshUsers::class,          // 每30分钟更新，今日、本周、本月
         Commands\UsersPackage::class,          // 
         Commands\UnpackPackages::class,        // 新版本解包
+        Commands\RecordGrid::class,            // 新版本记录用户的存活率
     ];
 
     /**

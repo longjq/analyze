@@ -64,6 +64,14 @@ class ChartController extends Controller
 
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
             $data['datas'] = $rows->pluck('new')->toArray();
+
+            // 今日新增
+//            $today = $this->usersList
+//                ->realUsers()
+//                ->whereBetween('ctime',DateHelper::thisTodayTime())
+//                ->count();
+//            $data['datas'][] = $today;
+//            $data['titles'] = $data['titles'].',\''.date('Y-m-d').'\'';
             return view('charts/users_new', compact('data'));
         }
 

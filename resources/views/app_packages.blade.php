@@ -51,9 +51,7 @@
                 <tr>
                     <th style="width: 200px;">包名</th>
                     <th>名称</th>
-                    @if(isset($packages[0]) && isset($packages[0]->user_count))
                     <th style="width: 130px;" class="text-center">用户数</th>
-                    @endif
                 </tr>
                 </thead>
                 <tbody>
@@ -61,15 +59,13 @@
                     <tr>
                         <td>{{ isset($package->package_unique) ? $package->package_unique : $package[1] }}</td>
                         <td>{{ isset($package->package_title) ? $package->package_title : $package[0] }}</td>
-                        @if(isset($package->user_count))
                         <td class="text-center">
-                                <button data-id="{{ $package->id }}" class="btn btn-success user_detail">
+                                <button class="btn btn-success user_detail">
                                     用户数 <span class="badge">
-                                    {{ $package->user_count }}
+                                    {{ $package->usersPackage()->count() }}
                                 </span>
                                 </button>
                         </td>
-                        @endif
                     </tr>
                 @endforeach
                 </tbody>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\Libraries\DateHelper;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 class UsersList extends Model
@@ -43,8 +44,9 @@ class UsersList extends Model
      * @return mixed
      */
     public function groupCount($field){
-        return $this->select($field, DB::raw('count('.$field.') as '.$field.'_count,COUNT(1) as null_count'))->groupBy($field)->get();
+        return $this->select($field, DB::raw('count('.$field.') as '.$field.'_count,COUNT(1) as null_count'))->groupBy($field);
     }
+
 
     /**
      * 存活率比较
@@ -78,4 +80,31 @@ class UsersList extends Model
         $user->{$field} = $count;
         return $user->save();
     }
+    
+    /**
+     * 真实用户数据判断
+     * @return mixed
+     */
+    public function scopeRealUsers($query, $type='')
+    {
+        if ($type == 'ctime'){
+            return $query->whereNotNull('imei')->whereNotNull('ctime');
+        }else if ($type == 'mtime'){
+            return $query->whereNotNull('imei')->whereNotNull('ctime')->whereNotNull('mtime');
+        }else{
+            return $query->whereNotNull('imei');
+        }
+    }
+
+    // 时间差比较
+    public function liveDiff($diffTime, $day)
+    {
+        return intval($diffTime) > intval(86400 * intval($day));
+    }
+    
+    public function gridLiveList($dateRange, $day)
+    {
+        return $this->whereBetween('mtime', $dateRange)->where('mtime','>', DB::raw('ctime + 86400 * '.$day))->count();
+    }
+
 }

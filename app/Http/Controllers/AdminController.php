@@ -31,7 +31,6 @@ class AdminController extends Controller
     public function dash()
     {
         $caches = Cache::lists('value', 'key');
-        
         return view('dash', compact('caches'));
     }
 
@@ -49,13 +48,8 @@ class AdminController extends Controller
             $countName = $u . '_count';
             if (in_array($u, $fields)) {
                 $userCount = $this->userList->count();
-                $data = $this->userList->groupCount($u);
-                $nullCount = null;
-                if (isset($data) && count($data) > 0 && is_null($data[0][$u])
-                    && $data[0][$countName]===0){
-                    $nullCount = $data[0]['null_count'];
-                    $data->shift();
-                }
+                $data = $this->userList->groupCount($u)->realUsers()->orderBy($countName,'desc')->get();
+                $nullCount = $this->userList->whereNull('imei')->count();
                 return view('user_data', compact('data','nullCount', 'u', 'userCount'));
             }
             abort('400', '非法操作');

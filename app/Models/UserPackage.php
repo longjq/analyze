@@ -22,11 +22,9 @@ class UserPackage extends Model
 
     public function attachUserPackage($userId, $package)
     {
-        
         $this->create([
             'user_id' => $userId,
             'package_unique' => $package[1],
-            
         ]);
     }
 }
