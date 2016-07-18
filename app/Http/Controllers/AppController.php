@@ -33,7 +33,8 @@ class AppController extends Controller
     public function packages(Request $request)
     {
         if ($request->isMethod('get')) {
-            $packages = $this->pack->paginate(15);
+            // $packages = $this->pack->paginate(15);
+            $packages = $this->userPackage->lists()->paginate(15);
             return view('app_packages', compact('packages'));
         }
         $userId = trim($request->input('user_id'));

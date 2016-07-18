@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class UserPackage extends Model
 {
     protected $table = 'user_packages';
@@ -12,7 +12,13 @@ class UserPackage extends Model
 
     public function package()
     {
-        $this->belongsTo(Package::class,'package_unique','package_unique');
+        return $this->belongsTo(Package::class,'package_unique','package_unique');
+    }
+    
+    // 大数据量分页
+    public function lists()
+    {
+       return $this->select(DB::raw('package_unique,COUNT(user_id) as user_count_group'))->groupBy('package_unique')->orderBy('user_count_group', 'desc');
     }
 
     public function deleteUser($userId)

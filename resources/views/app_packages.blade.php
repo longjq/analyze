@@ -32,7 +32,7 @@
                                id="name" placeholder="输入应用名称">
                     </div>
                     <div class="form-group">
-                        <label>
+                        <label style="display: none;">
                             有MD5 <input type="checkbox" name="is_md5" value="1">
                         </label>
                     </div>
@@ -58,11 +58,22 @@
                 @foreach($packages as $package)
                     <tr>
                         <td>{{ isset($package->package_unique) ? $package->package_unique : $package[1] }}</td>
-                        <td>{{ isset($package->package_title) ? $package->package_title : $package[0] }}</td>
+                        <td>
+                            @if(isset($package->user_count_group))
+                                {{ isset($package->package->package_title) ? $package->package->package_title : '' }}
+                            @else
+                                {{ isset($package->package_title) ? $package->package_title : $package[0] }}
+                            @endif
+                        </td>
                         <td class="text-center">
                                 <button class="btn btn-success user_detail">
                                     用户数 <span class="badge">
-                                    {{ $package->usersPackage()->count() }}
+
+                                        @if(isset($package->user_count_group))
+                                            {{ $package->user_count_group }}
+                                        @else
+                                            {{ $package->usersPackage()->count() }}
+                                        @endif
                                 </span>
                                 </button>
                         </td>
