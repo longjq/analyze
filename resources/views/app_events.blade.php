@@ -42,8 +42,8 @@
                     {{ csrf_field() }}
                     <div class="panel-body">
                         <div class="form-group {{ $errors->has('p') ? 'has-error' : ''}}">
-                            <label class="col-sm-2 text-right" for="package">包名：</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-3 text-right" for="package">包名：</label>
+                            <div class="input-group col-sm-8">
                                 @if($errors->count() > 0)
                                     <input type="text" class="form-control" value="{{ old('p') }}" name="p" id="package"
                                            placeholder="package">
@@ -56,8 +56,8 @@
                             </div>
                         </div>
                         <div class="form-group {{ $errors->has('e') ? 'has-error' : ''}}">
-                            <label class="col-sm-2 text-right">事件：</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-3 text-right">事件：</label>
+                            <div class="input-group col-sm-8">
                                 @if($errors->count() > 0)
                                     <label class="radio-inline">
                                         <input type="radio" {{ old('e') == 'inst' ? 'checked' : '' }} name="e"
@@ -80,6 +80,21 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="form-group {{ $errors->has('start_date') ? 'has-error' : ''}}">
+                            <label class="col-sm-3 text-right" for="start_date">开始日期：</label>
+                            <div class="input-group col-sm-8">
+                                <input type="text" class="form-control" name="start_date" value="{{ isset($start_date) ? $start_date : '' }}" id="start_date">
+                                <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                            </div>
+
+                        </div>
+                        <div class="form-group {{ $errors->has('end_date') ? 'has-error' : ''}}">
+                            <label class="col-sm-3 text-right" for="end_date">结束日期：</label>
+                            <div class="input-group  col-sm-8">
+                                <input type="text" class="form-control" name="end_date" value="{{ isset($end_date) ? $end_date : '' }}" id="end_date">
+                                <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-footer text-center">
                         <button type="submit" class="btn btn-success btn-lg">查询</button>
@@ -92,5 +107,15 @@
 @endsection
 
 @section('js')
+    <script>
+        $(function () {
+            $('#start_date').datetimepicker({
+                format: 'Y-MM-DD'
+            });
+            $('#end_date').datetimepicker({
+                format: 'Y-MM-DD'
+            });
+        });
+    </script>
 
 @endsection

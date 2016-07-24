@@ -158,28 +158,49 @@ class Record
      */
     public function recordGrid()
     {
-        // 1.昨日数据
-        
-        $users = $this->usersList->userDateRange('mtime', DateHelper::yesterday())->realUsers('mtime')->get();
-        // 2.遍历记录集
-        DB::beginTransaction();
-        foreach ($users as $user){
-            // 3.判断mtime - ctime 时间差
-            $diffTime = $user->mtime - strtotime(date('Y-m-d',$user->ctime));
-            $dateHelper = new DateHelper($user->ctime);
-            if ($user->liveDiff($diffTime, 29)){    
-                $this->recordGrid->saveLiveGrid('d30', $dateHelper);
-            }else if ($user->liveDiff($diffTime, 14)){
-                $this->recordGrid->saveLiveGrid('d15', $dateHelper);
-            }else if ($user->liveDiff($diffTime, 6)){
-                $this->recordGrid->saveLiveGrid('d7', $dateHelper);
-            }else if ($user->liveDiff($diffTime, 2)){
-                $this->recordGrid->saveLiveGrid('d3', $dateHelper);
-            }else if ($user->liveDiff($diffTime, 1)){
-                $this->recordGrid->saveLiveGrid('d1', $dateHelper);
+        // 1. 昨日新增用户保存数据库
+        $usersCount = $this->usersList->whereBetween('ctime', DateHelper::yesterday())->realUsers()->count();
+
+        $yesterday = new DateHelper(strtotime(DateHelper::lastDay()));
+        RecordGrid::create([
+            'row_date' => $yesterday->getDateFormat(),
+            'year'     => $yesterday->getYear(),
+            'month'    => $yesterday->getMonth(),
+            'day'      => $yesterday->getDay(),
+            'users'    => $usersCount
+        ]);
+        // 2. 昨日活跃用户
+        $yesterdayHots = $this->usersList->realUsers('mtime')->whereBetween('mtime', DateHelper::yesterday())
+            ->where('mtime','>', DB::raw('UNIX_TIMESTAMP(FROM_UNIXTIME(ctime,\'%Y-%m-%d 0:0:0\')) + 86400'))->get();
+        // 2.1 遍历昨日活跃用户
+        try{
+            DB::beginTransaction();
+            foreach ($yesterdayHots as $item){
+                if ($item->isUserLive(29)){
+                    RecordGrid::where('row_date', date('Y-m-d', $item->ctime))->increment('d30');
+                    continue;
+                }else if ($item->isUserLive(14)){
+                    RecordGrid::where('row_date', date('Y-m-d', $item->ctime))->increment('d15');
+                    continue;
+                }else if ($item->isUserLive(6)){
+                    RecordGrid::where('row_date', date('Y-m-d', $item->ctime))->increment('d7');
+                    continue;
+                }else if ($item->isUserLive(2)){
+                    RecordGrid::where('row_date', date('Y-m-d', $item->ctime))->increment('d3');
+                    continue;
+                }else{
+                    RecordGrid::where('row_date', date('Y-m-d', $item->ctime))->increment('d1');
+                }
             }
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollback();
         }
-        DB::commit();
+
+        // 2.2 昨日活跃时间戳 > ( date('Y-m-d', 新增时间戳) + 86400 )
+        // 2.3 真，满足次日活跃条件，以新增时间戳格式化出新增日期Y-m-d，并通过Y-m-d查询出表格记录行，在次日活跃字段上+1，跳过此次循环操作，避免其他日也满足的状况
+        // 2.4 假，跳过此次循环
+
     }
 
 }

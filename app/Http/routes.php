@@ -46,6 +46,8 @@ Route::group(['middleware' => 'auth'], function () {
     // 历史安装和卸载
     Route::match(['get', 'post'], '/app/events', 'AppController@events');
     Route::get('/app/download_events', 'AppController@downloadEvents');
+    Route::match(['get', 'post'], '/app/events_history', 'AppController@eventsHistory');
+
 
     // 新增用户图表
     Route::match(['get', 'post'], '/charts/users_new', 'ChartController@usersNew');

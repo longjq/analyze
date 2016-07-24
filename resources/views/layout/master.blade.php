@@ -69,6 +69,7 @@
                         <li><a href="/app/packages">应用用户查询</a></li>
                         <li><a href="/app/users">应用用户统计</a></li>
                         <li><a href="/app/events">历史应用</a></li>
+                        <li><a href="/app/events_history">历史应用排行</a></li>
                     </ul>
                 </li>
             </ul>

@@ -10,6 +10,7 @@ use App\Models\CountHot;
 use App\Models\CountNew;
 use App\Models\LiveCount;
 use App\Models\RecordDay;
+use App\Models\RecordGrid;
 use App\Models\RecordMonth;
 use App\Models\RecordWeek;
 use App\Models\UsersList;
@@ -120,24 +121,30 @@ class ChartController extends Controller
             'start_date.required' => '日期格式不能为空',
             'end_date.required' => '日期格式不能为空',
         ]);
+        
+        $dateRange = [$request->input('start_date'), $request->input('end_date')];
+        $lists = RecordGrid::whereIn('row_date', $dateRange)->get();
+        return view('charts/users_list', compact('lists')); 
+        
+        
 
-        $startTime = strtotime($request->input('start_date'));
-        $endTime = strtotime($request->input('end_date'));
+        // $startTime = strtotime($request->input('start_date'));
+        // $endTime = strtotime($request->input('end_date'));
 
 //        if($startTime == $endTime){
 //            $dayTime = DateHelper::dateTimeRange($request->input('start_date'));
 //            $startTime = $dayTime[0];
 //            $endTime = $dayTime[1];
 //        }
-        $usersList =  $this->usersLive->usersByDateRange(date('Y-m-d', $startTime), date('Y-m-d',$endTime));
-
-        if ($usersList->count() == 0) {
-            return view('charts/users_list', compact('startTime','endTime'));
-        }
-
-        $livePer = $this->anayzle->caclLiveAvg($usersList);
-
-        return view('charts/users_list', compact('livePer', 'startTime', 'endTime'));
+//        $usersList =  $this->usersLive->usersByDateRange(date('Y-m-d', $startTime), date('Y-m-d',$endTime));
+//
+//        if ($usersList->count() == 0) {
+//            return view('charts/users_list', compact('startTime','endTime'));
+//        }
+//
+//        $livePer = $this->anayzle->caclLiveAvg($usersList);
+//
+//        return view('charts/users_list', compact('livePer', 'startTime', 'endTime'));
 //        // 次日平均留存率
 //        $users = $this->usersLive->dateRange($startDateHelper->getDateFormat(), $endDateHelper->getDateFormat());
 //        $counts = $this->usersLive->liveDayAvg($users);

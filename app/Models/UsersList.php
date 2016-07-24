@@ -107,4 +107,12 @@ class UsersList extends Model
         return $this->whereBetween('mtime', $dateRange)->where('mtime','>', DB::raw('ctime + 86400 * '.$day))->count();
     }
 
+    public function isUserLive($day)
+    {
+        if ($this->mtime > intval(strtotime(date('Y-m-d 0:0:0', $this->ctime)) + 86400 * $day)){
+            return true;
+        }
+        return false;
+    }
+
 }

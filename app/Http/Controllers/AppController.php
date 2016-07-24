@@ -6,17 +6,20 @@ use App\Libraries\DBQueryHelper;
 use App\Libraries\ExcelHelper;
 use App\Models\Apps;
 use App\Models\Package;
+use App\Models\UserEvent;
 use App\Models\UserPackage;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Excel;
-
+use DB;
 class AppController extends Controller
 {
     private $package;
     private $pack;
     private $userPackage;
+    
+    private $titles;
     public function __construct()
     {
         $this->package = new Apps();
@@ -34,7 +37,10 @@ class AppController extends Controller
     {
         if ($request->isMethod('get')) {
             // $packages = $this->pack->paginate(15);
-            $packages = $this->userPackage->lists()->paginate(15);
+            $packages = $this->userPackage->lists()->take(100)->get();
+            if (isset($packages) && count($packages)>0){
+                $this->pack->runTitles($packages->pluck('package_unique')->toArray());
+            }
             return view('app_packages', compact('packages'));
         }
         $userId = trim($request->input('user_id'));
@@ -50,8 +56,9 @@ class AppController extends Controller
         }else{
             // $packages = $this->package->packagesList($package, $name);
             $packages = $this->pack->packagesList($package, $name, $isMd5);
+            $this->pack->runTitles($packages->pluck('package_unique')->toArray());
         }
-        
+
         if(is_null($packages)) return redirect('app/packages');
         return view('app_packages', compact('packages', 'package', 'name', 'userId'));
     }
@@ -153,18 +160,27 @@ class AppController extends Controller
         $this->validate($request, [
             'p' => 'required',
             'e' => 'required|in:inst,uninst',
+            'start_date' => 'required',
+            'end_date' => 'required'
         ], [
             'p.required' => '包名字段不能为空',
             'e.required' => '事件类型必须选择',
             'e.in'       => '请选择正确的事件类型',
+            'start_date.required' => '开始日期不能为空',
+            'end_date.required' => '结束日期不能为空'
         ]);
 
         $package = $request->input('p');
         $event = $request->input('e'); // inst | uninst
+        $start = date('Y-m-d 00:00:00', strtotime($request->input('start_date')));
+        $end = date('Y-m-d 23:59:59', strtotime($request->input('end_date')));;
 
-        $userEvent = new \App\Models\Assistant\UserEvent();
-        $userEventList = $userEvent->userEventList($package, $event)->toArray();
-        $userEventCount = $userEvent->userEventCount($userEventList);
+        $userEventList = UserEvent::where('package', $package)->where('event',$event)
+            ->whereBetween('created_at', [$start,$end])
+            ->get(['user_id'])
+            ->toArray();
+
+        $userEventCount = count($userEventList);
 
         if ($userEventCount > 0) {
             array_unshift($userEventList, ['用户ID']);
@@ -178,9 +194,47 @@ class AppController extends Controller
             ->with('count', $userEventCount)
             ->with('path', $path['file'])
             ->with('p', $package)
-            ->with('e', $event);
-
+            ->with('e', $event)
+            ->with('start_date', $request->input('start_date'))
+            ->with('end_date', $request->input('end_date'));
     }
+    
+    public function eventsHistory(Request $request)
+    {
+        if ($request->isMethod('get')){
+            return view('app_events_history');
+        }
+
+        $this->validate($request, [
+            'e' => 'required|in:inst,uninst',
+            'start_date' => 'required',
+            'end_date' => 'required'
+        ], [
+            'e.in'       => '请选择正确的事件类型',
+            'start_date.required' => '开始日期不能为空',
+            'end_date.required' => '结束日期不能为空'
+        ]);
+        $e = $request->input('e');
+        $start = date('Y-m-d 00:00:00', strtotime($request->input('start_date')));
+        $end = date('Y-m-d 23:59:59', strtotime($request->input('end_date')));;
+
+        $lists = UserEvent::where('event', $e)
+            ->select(DB::raw('package,name,version,count(package) as event_count'))
+            ->whereBetween('created_at', [$start,$end])
+            ->groupBy('package')
+            ->groupBy('name')
+            ->groupBy('version')
+            ->take(200)
+            ->orderBy('event_count', 'desc')
+            ->get();
+
+        return view('app_events_history')
+            ->with('e',$e)
+            ->with('start_date', $request->input('start_date'))
+            ->with('end_date', $request->input('end_date'))
+            ->with('lists', $lists);
+    }
+ 
 }
 
 

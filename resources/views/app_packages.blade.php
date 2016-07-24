@@ -55,30 +55,41 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($packages as $package)
-                    <tr>
-                        <td>{{ isset($package->package_unique) ? $package->package_unique : $package[1] }}</td>
-                        <td>
-                            @if(isset($package->user_count_group))
-                                {{ isset($package->package->package_title) ? $package->package->package_title : '' }}
-                            @else
-                                {{ isset($package->package_title) ? $package->package_title : $package[0] }}
-                            @endif
-                        </td>
-                        <td class="text-center">
-                                <button class="btn btn-success user_detail">
-                                    用户数 <span class="badge">
 
+                    @foreach($packages as $package)
+                        <tr>
+                            <td>{{ isset($package->package_unique) ? $package->package_unique : $package[1] }}</td>
+                            <td>
+                                {{--@if(isset($package->user_count_group))--}}
+                                    {{--{{ isset($package->package->package_title) ? $package->package->package_title : '' }}--}}
+
+                                {{--@else--}}
+                                    {{--{{ isset($package->package_title) ? $package->package_title : $package[0] }}--}}
+                                {{--@endif--}}
+                                @if( isset($userId) )
+                                    {{ isset($package->package_title) ? $package->package_title : $package[0] }}
+                                @else
+                                    {{ \App\Models\Package::getTitle($package->package_unique)->package_title }}
+                                @endif
+
+                            </td>
+                            @if( isset($userId) )
+                                <td>&nbsp;</td>
+                                @else
+                                <td class="text-center">
+                                    <button class="btn btn-success user_detail">
+                                        用户数 <span class="badge">
                                         @if(isset($package->user_count_group))
                                             {{ $package->user_count_group }}
-                                        @else
+                                            @else
                                             {{ $package->usersPackage()->count() }}
-                                        @endif
+                                            @endif
                                 </span>
-                                </button>
-                        </td>
-                    </tr>
-                @endforeach
+                                    </button>
+                                </td>
+                                @endif
+                        </tr>
+                    @endforeach
                 </tbody>
 
             </table>

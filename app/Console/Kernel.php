@@ -51,5 +51,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('unpack:packages')
             ->everyFiveMinutes();
         
+        // 算存活率
+        $schedule->command('record:grid')
+            ->dailyAt('2:05');
+        
     }
 }

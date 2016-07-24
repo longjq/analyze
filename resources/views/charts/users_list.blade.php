@@ -59,83 +59,124 @@
     </div>
 
     <div class="row">
-        <div class="col-md-3">
-            <div class="small-box @if(isset($livePer['d1']) && $livePer['d1'] > 0)
-                    bg-aqua
-                @else
-                    bg-gray
-                @endif">
-                <div class="inner">
-                    <h3>
-                        {{ isset($livePer['d1']) ? $livePer['d1'] : 0 }} %
+        <div class="col-sm-12">
+           @if(isset($lists))
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <td>日期</td>
+                        <td>新增</td>
+                        <td>次日</td>
+                        <td>3日</td>
+                        <td>7日</td>
+                        <td>15日</td>
+                        <td>30日</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($lists as $item)
+                        <tr>
+                            <td>{{ $item->row_date }}</td>
+                            <td>{{ $item->users }}</td>
+                            @if(isset($item->d1))
+                                <td>{{ $item->d1 }}</td>
+                            @endif
+                            @if(isset($item->d3))
+                                <td>{{ $item->d3 }}</td>
+                            @endif
+                            @if(isset($item->d7))
+                                <td>{{ $item->d7 }}</td>
+                            @endif
+                            @if(isset($item->d15))
+                                <td>{{ $item->d15 }}</td>
+                            @endif
+                            @if(isset($item->d30))
+                                <td>{{ $item->d30 }}</td>
+                            @endif
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+               @endif
+        </div>
+
+        {{--<div class="col-md-3">--}}
+            {{--<div class="small-box @if(isset($livePer['d1']) && $livePer['d1'] > 0)--}}
+                    {{--bg-aqua--}}
+                {{--@else--}}
+                    {{--bg-gray--}}
+                {{--@endif">--}}
+                {{--<div class="inner">--}}
+                    {{--<h3>--}}
+                        {{--{{ isset($livePer['d1']) ? $livePer['d1'] : 0 }} %--}}
                         {{--{{ isset($dayAvg) ? $dayAvg : 0 }} %--}}
-                    </h3>
-                    <p>
-                        次日存活率
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box @if(isset($livePer['d7']) && $livePer['d7'] > 0)
-                    bg-green
-                @else
-                    bg-gray
-                @endif">
-                <div class="inner">
-                    <h3>
-                        {{ isset($livePer['d7']) ? $livePer['d7'] : 0 }} %
-                    </h3>
-                    <p>
-                        7日存活率
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box @if(isset($livePer['d15']) && $livePer['d15'] > 0)
-                    bg-yellow
-                @else
-                    bg-gray
-                @endif">
-                <div class="inner">
-                    <h3>
-                        {{ isset($livePer['d15']) ? $livePer['d15'] : 0 }} %
-                    </h3>
-                    <p>
-                        15日存活率
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="small-box @if(isset($livePer['d30']) && $livePer['d30'] > 0)
-                        bg-red
-                    @else
-                        bg-gray
-                    @endif">
-                <div class="inner">
-                    <h3>
-                        {{ isset($livePer['d30']) ? $livePer['d30'] : 0 }} %
-                    </h3>
-                    <p>
-                        30日存活率
-                    </p>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-            </div>
-        </div>
+                    {{--</h3>--}}
+                    {{--<p>--}}
+                        {{--次日存活率--}}
+                    {{--</p>--}}
+                {{--</div>--}}
+                {{--<div class="icon">--}}
+                    {{--<i class="ion ion-bag"></i>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+        {{--</div>--}}
+        {{--<div class="col-md-3">--}}
+            {{--<div class="small-box @if(isset($livePer['d7']) && $livePer['d7'] > 0)--}}
+                    {{--bg-green--}}
+                {{--@else--}}
+                    {{--bg-gray--}}
+                {{--@endif">--}}
+                {{--<div class="inner">--}}
+                    {{--<h3>--}}
+                        {{--{{ isset($livePer['d7']) ? $livePer['d7'] : 0 }} %--}}
+                    {{--</h3>--}}
+                    {{--<p>--}}
+                        {{--7日存活率--}}
+                    {{--</p>--}}
+                {{--</div>--}}
+                {{--<div class="icon">--}}
+                    {{--<i class="ion ion-bag"></i>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+        {{--</div>--}}
+        {{--<div class="col-md-3">--}}
+            {{--<div class="small-box @if(isset($livePer['d15']) && $livePer['d15'] > 0)--}}
+                    {{--bg-yellow--}}
+                {{--@else--}}
+                    {{--bg-gray--}}
+                {{--@endif">--}}
+                {{--<div class="inner">--}}
+                    {{--<h3>--}}
+                        {{--{{ isset($livePer['d15']) ? $livePer['d15'] : 0 }} %--}}
+                    {{--</h3>--}}
+                    {{--<p>--}}
+                        {{--15日存活率--}}
+                    {{--</p>--}}
+                {{--</div>--}}
+                {{--<div class="icon">--}}
+                    {{--<i class="ion ion-bag"></i>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+        {{--</div>--}}
+        {{--<div class="col-md-3">--}}
+            {{--<div class="small-box @if(isset($livePer['d30']) && $livePer['d30'] > 0)--}}
+                        {{--bg-red--}}
+                    {{--@else--}}
+                        {{--bg-gray--}}
+                    {{--@endif">--}}
+                {{--<div class="inner">--}}
+                    {{--<h3>--}}
+                        {{--{{ isset($livePer['d30']) ? $livePer['d30'] : 0 }} %--}}
+                    {{--</h3>--}}
+                    {{--<p>--}}
+                        {{--30日存活率--}}
+                    {{--</p>--}}
+                {{--</div>--}}
+                {{--<div class="icon">--}}
+                    {{--<i class="ion ion-bag"></i>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+        {{--</div>--}}
     </div>
 
     {{--<div class="row">--}}

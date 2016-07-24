@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Libraries\Record;
+use App\Models\Cache;
 use Illuminate\Console\Command;
 
 class RecordGrid extends Command
@@ -39,6 +40,11 @@ class RecordGrid extends Command
     public function handle()
     {
         $record = new Record();
+        $s = time();
+        $runTime = date('Y-m-d H:i:s');
         $record->recordGrid();
+        $cache = new Cache();
+        $d['Time'] = intval(time()) - intval($s);
+        $cache->updateValue('run_lives', '执行时间：'.$runTime.', 执行时间耗时：'.$d['Time']);
     }
 }

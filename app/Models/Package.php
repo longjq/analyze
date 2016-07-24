@@ -9,13 +9,13 @@ class Package extends Model
     protected $table = 'packages';
     public $timestamps = false;
     protected $fillable = ['package_title','package_unique','md5','user_count'];
+    static $titles;
 
     public function listsByUserId($userId,$isMd5 = false)
     {
         $packages = DB::table('apps_user_lists')->where('user_id', $userId)->lists('packages');
-        $packages = $packages[0];
+        $packages = json_decode($packages[0]);
         if ($isMd5){
-            $packages = json_decode($packages[0]);
             $packages = array_filter($packages,function($item){
                 return isset($item[3]);
             });
@@ -51,12 +51,27 @@ class Package extends Model
         }
     }
 
+    // 根据包名数组获取应用数组
+    public function runTitles(array $packages)
+    {
+        $titles = $this->whereIn('package_unique', $packages)->get(['package_title','package_unique','md5']);
+        $len = count($titles);
+        for ($i=0;$i<$len;$i++){
+            self::$titles[$titles[$i]['package_unique']] = $titles[$i];
+        }
+    }
+    
+    // 返回指定包名的资料信息
+    public static function getTitle($packageUnique){
+        return self::$titles[$packageUnique];
+    }
 
+    // 解包更新包信息库
     public function syncItem(array $item)
     {
-        DB::insert('INSERT INTO packages(package_title,package_unique,md5,user_count) VALUES(?,?,?,1)
+        DB::insert('INSERT INTO packages(package_title,package_unique,md5) VALUES(?,?,?)
 ON DUPLICATE KEY UPDATE package_title=VALUES(`package_title`),
-md5=VALUES(`md5`),user_count=user_count+1', $item);
+md5=VALUES(`md5`)', $item);
     }
 
     public function usersPackage()
