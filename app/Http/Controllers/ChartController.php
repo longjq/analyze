@@ -94,7 +94,10 @@ class ChartController extends Controller
             $d = DateHelper::monthRange(date('Y-m-d'));
             $rows = $this->recordDay->dataByDateRange($d);
             $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-            $data['datas'] = $rows->pluck('hot')->toArray();
+            $points = $rows->pluck('hot')->toArray();
+            foreach ($points as $point){
+                $data['datas'][] = sprintf("%.2f", $point/10000);
+            }
             return view('charts/users_hot', compact('data'));
         }
 
@@ -103,7 +106,10 @@ class ChartController extends Controller
         $d = DateHelper::monthRange("{$year}-{$month}-1");
         $rows = $this->recordDay->dataByDateRange($d);
         $data['titles'] = $this->anayzle->anayzleTitles($rows->toArray());
-        $data['datas'] = $rows->pluck('hot')->toArray();
+        $points = $rows->pluck('hot')->toArray();
+        foreach ($points as $point){
+            $data['datas'][] = sprintf("%.2f", $point/10000);
+        }
 
         return view('charts/users_hot', compact('data'));
     }
