@@ -78,7 +78,7 @@
                 {{--<li><a href="../navbar/">Default</a></li>--}}
                 {{--<li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li>--}}
                 <li><p class="navbar-text" id="showtimes"></p></li>
-                <li><p class="navbar-text">{{ \Auth::user()->name }}</p></li>
+                <li><p class="navbar-text">admin</p></li>
                 <li><a href="{{ url('/logout') }}">退出</a></li>
             </ul>
         </div><!--/.nav-collapse -->

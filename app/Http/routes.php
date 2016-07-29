@@ -26,7 +26,7 @@ Route::get('/login', 'LoginController@index');
 Route::post('/login', 'LoginController@postLogin');
 Route::get('/logout', 'LoginController@logout');
 
-Route::group(['middleware' => 'auth'], function () {
+// Route::group(['middleware' => 'auth'], function () {
     // 后台首页
     Route::get('/dash', 'AdminController@dash');
 
@@ -56,7 +56,7 @@ Route::group(['middleware' => 'auth'], function () {
     // 存活率
     Route::match(['get', 'post'], '/charts/users_list', 'ChartController@usersList');
 
-});
+// });
 
 
 Route::get('/t', function (\Illuminate\Http\Request $request) {

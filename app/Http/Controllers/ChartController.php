@@ -129,7 +129,7 @@ class ChartController extends Controller
         ]);
         
         $dateRange = [$request->input('start_date'), $request->input('end_date')];
-        $lists = RecordGrid::whereIn('row_date', $dateRange)->get();
+        $lists = RecordGrid::whereBetween('row_date', $dateRange)->get();
         return view('charts/users_list', compact('lists')); 
         
         
