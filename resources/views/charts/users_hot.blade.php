@@ -62,7 +62,7 @@
             text: '活跃用户曲线图'
         };
         json.subtitle = {
-            text: '合计总数：{{ array_sum($data['datas'])  }}'
+            text: '合计总数：{{ array_sum(isset($data['datas']) ? $data['datas'] : [])  }}'
         };
         json.xAxis = {
             categories: [{!! $data['titles'] !!}]
@@ -99,7 +99,7 @@
         json.series = [
             {
                 name: '活跃用户',
-                data: [{{ implode(',', $data['datas']) }}]
+                data: [{{ implode(',', isset($data['datas']) ? $data['datas'] : []) }}]
             }
         ];
         $('#chart').highcharts(json);

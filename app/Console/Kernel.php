@@ -21,6 +21,9 @@ class Kernel extends ConsoleKernel
         Commands\UsersPackage::class,          // 
         Commands\UnpackPackages::class,        // 新版本解包
         Commands\RecordGrid::class,            // 新版本记录用户的存活率
+        Commands\EventLogTableCreate::class,            // 提前新建明日event临时表
+        Commands\EventLogTableDrop::class,            // 删除做题event临时表
+        Commands\EventLogTableCalc::class,            // 计算event临时表安装排行榜
     ];
 
     /**
@@ -54,6 +57,11 @@ class Kernel extends ConsoleKernel
         // 算存活率
         $schedule->command('record:grid')
             ->dailyAt('2:05');
-        
+
+        // 新建明日表
+        $schedule->command('eventlog:create')->dailyAt('23:00');
+
+        // 删除昨日表
+        $schedule->command('eventlog:drop')->dailyAt('1:00');
     }
 }
