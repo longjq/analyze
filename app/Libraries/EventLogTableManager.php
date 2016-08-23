@@ -10,6 +10,7 @@ namespace App\Libraries;
 
 use App\Models\EventLogCalc;
 use DB;
+
 class EventLogTableManager
 {
 
@@ -26,22 +27,22 @@ class EventLogTableManager
     private $nowTag;
 
 
-
     private function genertorNewTableInfo()
     {
         $this->newTag = date('Y_m_d', strtotime('+1 days'));
-        $this->newTalebName = 'user_events_temp_'.$this->newTag;
+        $this->newTalebName = 'user_events_temp_' . $this->newTag;
     }
 
-    private function genertorOldTableInfo(){
+    private function genertorOldTableInfo()
+    {
         $this->oldTag = date('Y_m_d', strtotime('-1 days'));
-        $this->oldTableName = 'user_events_temp_'.$this->oldTag;
+        $this->oldTableName = 'user_events_temp_' . $this->oldTag;
     }
 
     private function genertorNowTableInfo()
     {
         $this->nowTag = date('Y_m_d');
-        $this->nowTableName = 'user_events_temp_'.$this->nowTag;
+        $this->nowTableName = 'user_events_temp_' . $this->nowTag;
     }
 
     private function getOldTableSql()
@@ -53,7 +54,7 @@ class EventLogTableManager
 
     private function getNewTableSql()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `".$this->newTalebName."` (
+        $sql = "CREATE TABLE IF NOT EXISTS `" . $this->newTalebName . "` (
 `id`  int(10) UNSIGNED NOT NULL ,
 `user_id`  int(11) NOT NULL ,
 `event`  varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
@@ -75,15 +76,20 @@ DELAY_KEY_WRITE=0;";
         return $sql;
     }
 
-    private function getNowTableSql(){
-        $sql = "select `package`,`name` as `title`,COUNT(`event`) as `inst_count` FROM `?` WHERE `event`='inst' GROUP BY `package`,`name` HAVING COUNT(`inst_count`) > 50 ORDER BY `inst_count` desc";
+    private function getNowTableSql()
+    {
+        $sql = "SELECT `package`,`name` as `title`,COUNT(`event`) as `inst_count`
+FROM {$this->nowTableName} WHERE `event`='inst'
+GROUP BY `package`,`title`
+HAVING `inst_count` > :inst_count
+ORDER BY `inst_count` desc";
         $this->nowTableSql = $sql;
         return $sql;
     }
 
     private function dropNewTableIfExists()
     {
-        DB::statement('DROP TABLE IF EXISTS '.$this->newTalebName);
+        DB::statement('DROP TABLE IF EXISTS ' . $this->newTalebName);
     }
 
     public function createNewTable()
@@ -101,30 +107,24 @@ DELAY_KEY_WRITE=0;";
     public function calc()
     {
         $this->genertorNowTableInfo();
-        DB::enableQueryLog();
-        $results = DB::select($this->getNowTableSql(), [$this->nowTableName]);
-
-        // DB::select('select * from caches WHERE `key` = ? ',['last_new_week']);
-        dd($results);
-         return $this->saveCalcResults($results);
+        $results = DB::select($this->getNowTableSql(), ['inst_count' => 50]);
+        return $this->saveCalcResults($results);
     }
 
     private function saveCalcResults($items)
     {
-        try
-        {
+        try {
             DB::beginTransaction();
-            foreach($items as $item){
+            foreach ($items as $item) {
                 EventLogCalc::create([
                     'package' => $item['package'],
-                    'title' => $item['title'],f
+                    'title' => $item['title'],
                     'inst_count' => $item['inst_count'],
                     'row_add' => date('Y-m-d')
                 ]);
             }
             DB::commit();
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             DB::rollBack();
             $logger = new LoggerHelper('event_calc');
             $logger->info('存储过程出错Message：', $e->getMessage());
