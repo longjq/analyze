@@ -117,17 +117,17 @@ ORDER BY `inst_count` desc";
             DB::beginTransaction();
             foreach ($items as $item) {
                 EventLogCalc::create([
-                    'package' => $item['package'],
-                    'title' => $item['title'],
-                    'inst_count' => $item['inst_count'],
-                    'row_add' => date('Y-m-d')
+                    'package' => $item->package,
+                    'title' => $item->title,
+                    'inst_count' => $item->inst_count,
+                    'add_date' => date('Y-m-d')
                 ]);
             }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             $logger = new LoggerHelper('event_calc');
-            $logger->info('存储过程出错Message：', $e->getMessage());
+            $logger->info('事务执行异常Message：', [$e->getMessage()]);
             return false;
         }
 

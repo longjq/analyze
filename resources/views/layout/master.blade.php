@@ -69,7 +69,7 @@
                         <li><a href="/app/packages">应用用户查询</a></li>
                         <li><a href="/app/users">应用用户统计</a></li>
                         <li><a href="/app/events">历史应用</a></li>
-                        <li><a href="/app/events_history">历史应用排行</a></li>
+                        <li><a href="/event/log">应用安装排行</a></li>
                     </ul>
                 </li>
             </ul>
@@ -91,7 +91,8 @@
     @yield('content')
 </div> <!-- /container -->
 
-
+@section('body_html')
+@show
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->

@@ -46,8 +46,9 @@ Route::get('/logout', 'LoginController@logout');
     // 历史安装和卸载
     Route::match(['get', 'post'], '/app/events', 'AppController@events');
     Route::get('/app/download_events', 'AppController@downloadEvents');
-    Route::match(['get', 'post'], '/app/events_history', 'AppController@eventsHistory');
+    // Route::match(['get', 'post'], '/app/events_history', 'AppController@eventsHistory');
 
+    Route::match(['get','post'], '/event/log', 'EventLogController@index');
 
     // 新增用户图表
     Route::match(['get', 'post'], '/charts/users_new', 'ChartController@usersNew');
@@ -59,15 +60,57 @@ Route::get('/logout', 'LoginController@logout');
 // });
 
 
-Route::get('/t', function (\Illuminate\Http\Request $request) {
-
-
-
-});
 
 
 Route::get('/create', 'LoginController@create');
 Route::match(['get','post'],'/test', 'LoginController@test');
+
+ini_set('memory_limit', '1024M');
+ini_set('max_execution_time',0);
+
+Route::get('/c2e',function(){
+    $start = microtime(true);
+    // echo $start.'<br/>';
+    $items = \App\Models\UserSnapshot::take(1)->get();
+
+    foreach($items as $item){
+        \App\Core\ReportAgent::getInstance()->info($item);
+    }
+    print_r(round(microtime(true) - $start, 3));
+});
+
+Route::get('/savees',function(){
+
+    $start = microtime(true);
+    // echo $start.'<br/>';
+    for($i=0;$i<1;$i++){
+        \App\Libraries\Queue::getInstance()->run('user_snapshots', 1);
+    }
+    print_r(round(microtime(true) - $start, 3));
+});
+
+Route::get('/f',function(){
+    $start = microtime(true);
+
+    $myfile = fopen("C:/Users/Administrator/Desktop/user_snapshots.log", "r") or die("Unable to open file!");
+    while(!feof($myfile)) {
+        $item = fgets($myfile);
+        $item = json_decode($item, true);
+        if($item){
+            \App\Models\UserSnapshot::create([
+                'user_id' => $item['@fields']['ctxt_user_id'],
+                'md5' => $item['@fields']['ctxt_md5'],
+                'snapshot' => $item['@fields']['ctxt_snapshot'],
+                'snapshot_time' => $item['@fields']['ctxt_snapshot_time'],
+                'created_at' => $item['@fields']['ctxt_created_at'],
+                'updated_at' => $item['@fields']['ctxt_updated_at'],
+            ]);
+        }
+    }
+    fclose($myfile);
+
+    print_r(round(microtime(true) - $start, 3));
+});
 
 
 
