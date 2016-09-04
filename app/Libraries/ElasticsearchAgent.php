@@ -30,18 +30,49 @@ class ElasticsearchAgent
 
     public function bulk($tableName, $items)
     {
-        $indexDate = date('Y_m');
-        foreach($items as $item){
-            $params['body'][] = [
-                'index' => [
-                    '_index' => 'analysis_'.$indexDate,
-                    '_type' => $tableName
-                ]
-            ];
+        $map = ['user_events' => 'id', 'user_snapshots' => 'user_id'];
+        $type = str_replace('analysis_','',$tableName);
+        $primary = $map[$type];
+        $params = [];
 
+        foreach($items as $item){
+            $params['body'][] = $this->head($type, $item, $primary);
             $params['body'][] = $item;
         }
-        return $this->es->bulk($params);
+        if(count($params) > 0){
+            return $this->es->bulk($params);
+        }
+        return false;
+    }
+
+    private function head($type,$item, $primary){
+
+        return [
+            'index' => [
+                '_index' => 'analysis',
+                '_type' => $type,
+                '_id'   => $item->{$primary}
+            ]
+        ];
+
+//        if($tableName == 'analysis_user_snapshots'){
+//            return [
+//                'index' => [
+//                    '_index' => 'analysis_'.$tableName,
+//                    '_type' => $tableName,
+//                    '_id'   => $item->user_id
+//                ]
+//            ];
+//        }
+//
+//        return [
+//            'index' => [
+//                '_index' => 'analysis_'.$tableName,
+//                '_type' => $tableName,
+//                '_id'   => $item->id
+//            ]
+//        ];
+
     }
 
     public function index($item)

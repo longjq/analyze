@@ -8,8 +8,8 @@
 
 namespace App\Libraries;
 
-use App\Core\ReportAgent;
-use RedisServer;
+
+use RedisClient;
 
 class Queue
 {
@@ -26,7 +26,12 @@ class Queue
 
     private function __construct()
     {
-        $this->redis = RedisServer::connection();
+        $this->redis = RedisClient::connection('assistant');
+    }
+
+    public function expendTime($key, $timestr)
+    {
+        $this->redis->set($key, $timestr);
     }
 
     public function run($tableName, $count)
@@ -35,22 +40,35 @@ class Queue
 
         $indexs = [];
         foreach ($items as $item) {
-            $indexs = array_merge($indexs, $this->decodeJson($tableName, $item));
+            if( is_null($item) ) continue;
+
+            // prase $item string to json
+            $item = json_decode($item);
+            if($packJson = $this->decodePackageJson($tableName, $item)){
+                $item->snapshot = array_merge([], $packJson);
+            }
+
+            $indexs[] = $item;
         }
+
+//        if($tableName == 'analysis_user_events'){
+//            $tableName = $tableName.'_'.date('Y_m');
+//        }
 
         return \App\Libraries\ElasticsearchAgent::getInstance()->bulk($tableName, $indexs);
     }
 
-    private function decodeJson($tableName, $item){
-        // 1. prase string to json
-        $item = json_decode($item);
+    private function renameEventsLog($tableName){
+        return $tableName.'_'.date('Y_m');
+    }
 
-        // 2. if json have 'user_snapshots' item , let's json_decode that item
-        if($tableName == 'user_snapshots' && isset($item->snapshot)){
-            $item = $this->decodeSnapshot($item);
+    private function decodePackageJson($tableName, $item){
+
+        // if json have 'analysis_user_snapshots' item , let's json_decode that item
+        if($tableName == 'analysis_user_snapshots' && isset($item->snapshot)){
+            return $this->decodeSnapshot($item);
         }
-
-        return $item;
+        return [];
     }
 
     private function decodeSnapshot($item)
@@ -58,15 +76,7 @@ class Queue
         $snapshots = json_decode($item->snapshot);
 
         foreach($snapshots as $snapshot){
-            $doc[] = array_merge([
-                'user_id' => $item->user_id,
-                'md5' => $item->md5,
-                'snapshot_time' => $item->snapshot_time,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at
-            ],
-                array_combine(['title', 'package', 'ver', 'md5'], $snapshot)
-            );
+            $doc[] = array_combine(['title', 'package', 'ver', 'md5'], $snapshot);
         }
         return $doc;
     }

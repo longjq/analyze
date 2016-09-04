@@ -71,7 +71,7 @@ ini_set('max_execution_time',0);
 Route::get('/c2e',function(){
     $start = microtime(true);
     // echo $start.'<br/>';
-    $items = \App\Models\UserSnapshot::take(1)->get();
+    $items = \App\Models\UserSnapshot::skip(1000)->take(100)->get();
 
     foreach($items as $item){
         \App\Core\ReportAgent::getInstance()->info($item);
@@ -84,8 +84,13 @@ Route::get('/savees',function(){
     $start = microtime(true);
     // echo $start.'<br/>';
     for($i=0;$i<1;$i++){
-        \App\Libraries\Queue::getInstance()->run('user_snapshots', 1);
+        \App\Libraries\Queue::getInstance()->run('user_events', 10000);
     }
+    $timeSignature = [
+        'datetime' => date('Y-m-d H:i:s'),
+        'expend_time' => round((microtime(true) - $start), 3)
+    ];
+    \App\Libraries\Queue::getInstance()->expendTime(json_encode($timeSignature));
     print_r(round(microtime(true) - $start, 3));
 });
 
@@ -111,6 +116,64 @@ Route::get('/f',function(){
 
     print_r(round(microtime(true) - $start, 3));
 });
+
+
+
+
+
+
+Route::get('/test/ping', function(){
+    \App\Libraries\Queue::getInstance()->run('analysis_caches', 100);
+});
+
+
+
+Route::get('/test/xxx',function(){
+//    $str = 'analysis_local_user_events';
+//
+//    dd(str_replace('analysis_local_','',$str));
+    $items = \App\Models\UserSnapshot::all();
+
+    foreach( $items as $item ){
+        \App\Core\ReportAgent::getInstance()->info($item);
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
